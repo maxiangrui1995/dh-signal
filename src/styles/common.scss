@@ -1,0 +1,103 @@
+body,
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #f7f7f7;
+}
+
+.el-menu {
+  .fa {
+    margin-right: 5px;
+  }
+}
+
+.el-breadcrumb {
+  display: inline-block;
+}
+
+.el-scrollbar__thumb {
+  background: rgba(0, 0, 0, 0.6)
+}
+
+.el-divider {
+  margin: 0 8px;
+  display: inline-block;
+  height: .9em;
+  width: 1px;
+  vertical-align: middle;
+  position: relative;
+  top: -.06em;
+  font-family: Monospaced Number, Chinese Quote, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(0, 0, 0, .65);
+  box-sizing: border-box;
+  list-style: none;
+  background: #e8e8e8;
+}
+
+.el-popover-box_status {
+  font-size: 22px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.el-popover-box_status.el-icon-question {
+  color: #e6a23c;
+}
+
+.layout-header {
+  box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+  background: #fff;
+  z-index: 1;
+  position: relative;
+  &-logo {
+    float: left;
+  }
+  &-inner {
+    height: 60px;
+    line-height: 60px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  &-tools {
+    float: right;
+    &-btn-con {
+      text-align: center;
+      cursor: pointer;
+      margin: 20px 10px;
+    }
+    .el-badge {
+      vertical-align: inherit;
+    }
+  }
+}
+
+.layout-content>.el-scrollbar {
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
+}
+
+.page-header {
+  border-bottom: 1px solid #e8e8e8;
+  background: #ffffff;
+  &-inner {
+    height: 60px;
+    line-height: 60px;
+  }
+}
+
+.page-header-tabs {
+  .el-tabs__header {
+    margin-bottom: 0;
+  }
+  .el-tabs__nav-wrap::after {
+    background: transparent
+  }
+}
