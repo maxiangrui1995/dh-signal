@@ -136,6 +136,30 @@ const planList = [
     ]
   }
 ];
+const greenBelt = [{
+  path: '/greenBelt',
+  name: 'greenBelt',
+  meta: {
+    title: "绿波带"
+  },
+  component: resolve => require(['@/views/greenBelt/GreenBelt'], resolve)
+}, {
+  path: '/greenBelt/:id',
+  name: 'greenBelt-details',
+  meta: {
+    title: "绿波带"
+  },
+  component: resolve => require(['@/views/greenBelt/Map'], resolve)
+}];
+
+const privilege = [{
+  path: '/privilege',
+  name: 'privilege',
+  meta: {
+    title: "特勤联动"
+  },
+  component: resolve => require(['@/views/privilege/Privilege'], resolve)
+}]
 
 export default [
   {
@@ -146,7 +170,7 @@ export default [
     },
     component: resolve => require(['@/views/home/Home'], resolve),
     children: [
-      ...region, ...planList
+      ...region, ...planList, ...greenBelt, ...privilege
     ]
   }
 ]

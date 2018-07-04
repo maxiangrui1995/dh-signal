@@ -1,149 +1,285 @@
 <template>
-    <div>
-        <el-button type="primary" icon="el-icon-plus" @click="handleCreate" :style="{marginBottom: '10px'}">
-            新增
-        </el-button>
-        <el-table :data="planData" v-loading="loading" style="width: 100%">
-            <el-table-column prop="patternid" label="方案名称">
-                <template slot-scope="scope">
-                    <span>方案{{ ~~scope.row.patternid + 1 }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="step" label="总步数">
-                <template slot-scope="scope">
-                    <el-popover trigger="hover" placement="right-start" title="方案详细信息" :style="{display: 'inline-block'}">
-                        <p v-for="index in ~~scope.row.step" :key="index">
-                            <span>步号: {{ index }}</span>&nbsp;&nbsp;
-                            <span>阶段: {{ ~~scope.row['phase' + index] + 1 }}</span>&nbsp;&nbsp;
-                            <span>时长: {{ scope.row['time' + index] }}</span>
-                        </p>
-                        <div slot="reference" class="name-wrapper">
-                            <el-tag :style="{cursor: 'pointer'}">{{ scope.row.step }}</el-tag>
-                        </div>
-                    </el-popover>
-                </template>
-            </el-table-column>
-            <el-table-column prop="time_interval" label="间隔">
-            </el-table-column>
-            <el-table-column prop="period" label="周期">
-                <template slot-scope="scope">
-                    <i class="el-icon-time"></i>
-                    <span>{{ scope.row.period }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="操作" align="center" width="180">
-                <template slot-scope="scope">
-                    <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
-                    <div class="el-divider"></div>
-                    <el-popover placement="top" width="200" :ref="`popover-${scope.$index}`">
-                        <p>
-                            <i class="el-icon-question el-popover-box_status"></i>
-                            <span>确定删除这条记录吗?</span>
-                        </p>
-                        <div style="text-align: right; margin: 0">
-                            <el-button size="mini" type="text" @click="scope._self.$refs[`popover-${scope.$index}`].doClose()">取消</el-button>
-                            <el-button type="primary" size="mini" @click="scope._self.$refs[`popover-${scope.$index}`].doClose()">确定</el-button>
-                        </div>
-                        <el-button type="text" slot="reference" :disabled="scope.$index < pageTotals - 1">删除</el-button>
-                    </el-popover>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination @size-change="pageSizeChange" @current-change="pageCurrentChange" :current-page="pagePage" :page-size="pageRows" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals" v-if="pageTotals>0" :style="{'margin':'10px 0 0','text-align':'right'}">
-        </el-pagination>
+  <div>
+    <el-button type="primary" icon="el-icon-plus" @click="handleCreate" :style="{marginBottom: '10px'}">
+      新增
+    </el-button>
+    <el-table :data="tableData" v-loading="tableLoading" style="width: 100%">
+      <el-table-column prop="patternid" label="方案名称">
+        <template slot-scope="scope">
+          <span>方案{{ ~~scope.row.patternid + 1 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="step" label="总步数">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="right-start" title="方案详细信息" :style="{display: 'inline-block'}">
+            <p v-for="index in ~~scope.row.step" :key="index">
+              <span>步号: {{ index }}</span>&nbsp;&nbsp;
+              <span>阶段: {{ ~~scope.row['phase' + index] + 1 }}</span>&nbsp;&nbsp;
+              <span>时长: {{ scope.row['time' + index] }}</span>
+            </p>
+            <div slot="reference" class="name-wrapper">
+              <el-tag :style="{cursor: 'pointer'}">{{ scope.row.step }}</el-tag>
+            </div>
+          </el-popover>
+        </template>
+      </el-table-column>
+      <el-table-column prop="time_interval" label="间隔">
+      </el-table-column>
+      <el-table-column prop="period" label="周期">
+        <template slot-scope="scope">
+          <i class="el-icon-time"></i>
+          <span>{{ scope.row.period }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" width="180">
+        <template slot-scope="scope">
+          <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
+          <div class="el-divider"></div>
+          <el-button type="text" @click="handleDelete(scope.row)" :disabled="scope.$index < pageTotals - 1 || pageTotals === 1">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination @size-change="pageSizeChange" @current-change="pageCurrentChange" :current-page="pagePage" :page-size="pageRows" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals" v-if="pageTotals>0" :style="{'margin':'10px 0 0','text-align':'right'}">
+    </el-pagination>
 
-        <el-dialog title="方案新增" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false">
-            <div>输入名称可自动生成</div>
-            <el-form :model="formData" :rules="rules" ref="form" :style="{marginTop: '20px'}">
-                <el-form-item label="" prop="name">
-                    <el-input clearable v-model="formData.name" placeholder="请输入内容"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="handleFormCancel">取 消</el-button>
-                <el-button type="primary" @click="handleFormSubmit">确 定</el-button>
-            </span>
-        </el-dialog>
-
-        <el-dialog title="方案编辑" :visible.sync="dialogVisible_modify" width="30%" :close-on-click-modal="false">
-            <el-form :model="formData" :rules="rules" ref="form">
-                <el-form-item label="" prop="name">
-                    <el-input clearable v-model="formData.name" placeholder="请输入内容"></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="handleFormCancel">取 消</el-button>
-                <el-button type="primary" @click="handleFormSubmit">确 定</el-button>
-            </span>
-        </el-dialog>
-    </div>
+    <el-dialog title="方案编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false">
+      <el-form :model="formData" :inline="true" :rules="rules" ref="form">
+        <div v-for="index in ~~formData.step" :key="index">
+          <el-form-item label="步号" :style="{marginRight: '20px'}">
+            <el-input :value="index" disabled :style="{width: '40px'}"></el-input>
+          </el-form-item>
+          <el-form-item label="阶段" :style="{marginRight: '20px'}">
+            <el-select placeholder="请选择" v-model="formData['phase'+index]" :style="{width: '100px'}">
+              <el-option v-for="item in phaseData" :key="item.id" :label="'阶段'+(~~item.serialid+1)" :value="item.serialid">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="时长" :style="{marginRight: '20px'}">
+            <el-input-number v-model.number="formData['time'+index]" :min="0" :max="255"></el-input-number>
+          </el-form-item>
+          <el-form-item label="" prop="name">
+            <el-button @click="handleItemDelete(index)">删除</el-button>
+          </el-form-item>
+        </div>
+      </el-form>
+      <el-button plain size="medium" @click="handleItemCreate()" :style="{width: '100%'}">新 增</el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleFormCancel">取 消</el-button>
+        <el-button type="primary" @click="handleFormSubmit" :loading="dialogLoading">确 定</el-button>
+      </span>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      loading: true,
+      id: this.$route.params.id,
       pagePage: 1,
       pageRows: 20,
       pageTotals: 0,
-      planData: [],
-      id: this.$route.params.id,
+      tableData: [],
+      phaseData: [],
+      tableLoading: true,
       dialogVisible: false,
-      dialogVisible_modify: false,
+      dialogLoading: false,
       formData: {},
-      rules: {}
+      rules: {},
+      options: [
+        {
+          value: "选项1",
+          label: "黄金糕"
+        },
+        {
+          value: "选项2",
+          label: "双皮奶"
+        },
+        {
+          value: "选项3",
+          label: "蚵仔煎"
+        },
+        {
+          value: "选项4",
+          label: "龙须面"
+        },
+        {
+          value: "选项5",
+          label: "北京烤鸭"
+        }
+      ]
     };
   },
   methods: {
+    // page
     pageSizeChange(rows) {
       if (this.pageRows !== rows) {
         this.pageRows = rows;
-        this.fetchData();
+        this.getDataList();
       }
     },
     pageCurrentChange(page) {
       this.pagePage = page;
-      this.fetchData();
+      this.getDataList();
     },
-    fetchData() {
+    // 请求数据
+    getDataList() {
+      this.tableLoading = true;
       this.$http("index/d_pattern/dataList", {
         page: this.pagePage,
         rows: this.pageRows,
         plan_id: this.id
       }).then(res => {
         if (res.status === "1") {
-          this.planData = res.data.list;
+          this.tableData = res.data.list;
           this.pageTotals = ~~res.data.total;
         }
-        this.loading = false;
+        this.tableLoading = false;
+      });
+    },
+    // 请求阶段信息
+    getPhaseDataList() {
+      this.$http("index/d_phasestatus/dataList", {
+        plan_id: this.id,
+        page: 1,
+        rows: 8
+      }).then(res => {
+        if (res.status) {
+          this.phaseData = res.data.list;
+        }
       });
     },
     handleCreate() {
-      this.$confirm("即将自动生成一条默认方案,是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$msgbox({
+        title: "提示",
+        message: "即将自动生成一条默认方案,是否继续?",
+        showCancelButton: true,
+        type: "warning",
+        confirmButtonText: "继续",
+        cancelButtonText: "放弃",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "生成中...";
+            // ajax
+            this.$http("index/d_pattern/dataAdd", {
+              plan_id: this.id
+            }).then(res => {
+              if (res.status) {
+                this.getDataList();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            done();
+          }
+        }
       })
-        .then(() => {
-          this.$message({
-            type: "success",
-            message: "成功!"
-          });
-        })
+        .then(action => {})
+        .catch(action => {});
     },
     handleUpdate(row) {
-      console.log(row);
-      this.dialogVisible_modify = true;
+      this.dialogVisible = true;
+      this.formData = Object.assign({}, row);
+    },
+    handleDelete(row) {
+      this.$msgbox({
+        title: "提示",
+        message: "此操作将永久删除该文件, 是否继续?",
+        showCancelButton: true,
+        type: "warning",
+        confirmButtonText: "删除",
+        cancelButtonText: "放弃",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "删除中...";
+            // ajax
+            this.$http("index/d_pattern/dataDelete", {
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                if ((this.pagePage - 1) * this.pageRows <= this.pageTotals) {
+                  this.pagePage--;
+                }
+                this.getDataList();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            done();
+          }
+        }
+      })
+        .then(action => {})
+        .catch(action => {});
     },
     handleFormCancel() {
       this.dialogVisible = false;
       this.$refs["form"].resetFields();
     },
-    handleFormSubmit() {}
+    handleFormSubmit() {
+      this.dialogLoading = true;
+      let period = 0;
+      for (let i = 0; i < ~~this.formData.step; i++) {
+        period +=
+          ~~this.formData["time" + (i + 1)] + ~~this.formData["time_interval"];
+      }
+      this.formData.period = period;
+      delete this.formData.patternid;
+      delete this.formData.plan_id;
+      delete this.formData.time_interval;
+      this.$http("index/d_pattern/dataUpdate", this.formData).then(res => {
+        if (res.status) {
+          this.getDataList();
+        }
+        this.$message({
+          type: res.status ? "success" : "error",
+          message: res.message
+        });
+        this.dialogLoading = false;
+        this.dialogVisible = false;
+      });
+    },
+    // 删除行
+    handleItemDelete(index) {
+      if (this.formData.step <= "2") {
+        return this.$message({
+          message: "至少保留两条步号!",
+          type: "warning"
+        });
+      }
+      let copy = Object.assign({}, this.formData);
+      for (let i = 1; i < this.formData.step; i++) {
+        if (i >= index) {
+          this.formData["phase" + i] = copy["phase" + (i + 1)];
+          this.formData["time" + i] = copy["time" + (i + 1)];
+        }
+      }
+      this.formData["phase" + this.formData.step] = "255";
+      this.formData["time" + this.formData.step] = "0";
+      this.formData.step--;
+    },
+    // 新增行
+    handleItemCreate() {
+      this.formData.step++;
+      this.formData["phase" + this.formData.step] = "0";
+      this.formData["time" + this.formData.step] = 25;
+    }
   },
   created() {
-    this.fetchData();
+    this.getPhaseDataList();
+    this.getDataList();
   }
 };
 </script>

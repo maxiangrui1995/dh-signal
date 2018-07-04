@@ -16,7 +16,7 @@
       </el-header>
       <el-main>
         <el-card shadow="never">
-          <el-table :data="tableData" v-loading="loading" style="width: 100%">
+          <el-table :data="tableData" v-loading="tableLoading" style="width: 100%">
             <el-table-column type="index" width="50">
             </el-table-column>
             <el-table-column prop="name" label="方案名称">
@@ -35,17 +35,7 @@
               <template slot-scope="scope">
                 <el-button type="text" @click="handleDetails(scope.row)">详情</el-button>
                 <div class="el-divider"></div>
-                <el-popover placement="top" width="200" :ref="`popover-${scope.$index}`">
-                  <p>
-                    <i class="el-icon-question el-popover-box_status"></i>
-                    <span>确定删除这条记录吗?</span>
-                  </p>
-                  <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="scope._self.$refs[`popover-${scope.$index}`].doClose()">取消</el-button>
-                    <el-button type="primary" size="mini" @click="handleDelete(scope.row),scope._self.$refs[`popover-${scope.$index}`].doClose()">确定</el-button>
-                  </div>
-                  <el-button type="text" slot="reference">删除</el-button>
-                </el-popover>
+                <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -64,24 +54,25 @@ export default {
       pagePage: 1,
       pageRows: 20,
       pageTotals: 0,
-      loading: true,
+      tableLoading: true,
       tableData: []
     };
   },
   methods: {
+    // page
     pageSizeChange(rows) {
       if (this.pageRows !== rows) {
         this.pageRows = rows;
-        this.fetchData();
+        this.getDataList();
       }
     },
     pageCurrentChange(page) {
       this.pagePage = page;
-      this.fetchData();
+      this.getDataList();
     },
     // 请求数据
-    fetchData() {
-      this.loading = true;
+    getDataList() {
+      this.tableLoading = true;
       this.$http("index/d_plan/dataList", {
         page: this.pagePage,
         rows: this.pageRows
@@ -91,54 +82,95 @@ export default {
           this.tableData = data.list;
           this.pageTotals = ~~data.total;
         }
-        this.loading = false;
+        this.tableLoading = false;
       });
     },
     handleCreate() {
       this.$prompt("输入名称后将自动生成一条记录", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
+        confirmButtonText: "新增",
+        cancelButtonText: "放弃",
         inputPlaceholder: "请输入名称",
-        inputPattern: /[\u4e00-\u9fa5_a-zA-Z0-9_]{4,9}/,
-        inputErrorMessage: "名称长度限制4-9个字符,不允许出现特殊字符(除 _)"
-      }).then(({ value }) => {
-        this.$http("index/d_plan/dataInit", {
-          name: value
-        }).then(res => {
-          if (res.status) {
-            this.fetchData();
+        // inputPattern: /[\u4e00-\u9fa5_a-zA-Z0-9_]{4,9}/,
+        inputValidator: value => {
+          if (value.replace(/(^\s*)|(\s*$)/g, "")) {
+            return true;
+          } else {
+            return false;
           }
-          this.$message({
-            type: res.status ? "success" : "error",
-            message: res.message
-          });
-        });
-      });
+        },
+        inputErrorMessage: "请填写名称",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "初始化中...";
+            // ajax
+            this.$http("index/d_plan/dataInit", {
+              name: instance.inputValue
+            }).then(res => {
+              if (res.status) {
+                this.getDataList();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            done();
+          }
+        }
+      })
+        .then(action => {})
+        .catch(action => {});
     },
     handleDetails(row) {
       this.$router.push({
         path: "/planList/" + row.id
       });
     },
+    // 删除
     handleDelete(row) {
-      this.$http("index/d_plan/dataDelete", {
-        id: row.id
-      }).then(res => {
-        if (res.status) {
-          if ((this.pagePage - 1) * this.pageRows <= this.pageTotals) {
-            this.pagePage--;
+      this.$msgbox({
+        title: "提示",
+        message: "此操作将永久删除该文件, 是否继续?",
+        showCancelButton: true,
+        type: "warning",
+        confirmButtonText: "删除",
+        cancelButtonText: "放弃",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "删除中...";
+            // ajax
+            this.$http("index/d_plan/dataDelete", {
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                if ((this.pagePage - 1) * this.pageRows <= this.pageTotals) {
+                  this.pagePage--;
+                }
+                this.getDataList();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            done();
           }
-          this.fetchData();
         }
-        this.$message({
-          type: res.status ? "success" : "error",
-          message: res.message
-        });
-      });
+      })
+        .then(action => {})
+        .catch(action => {});
     }
   },
   created() {
-    this.fetchData();
+    this.getDataList();
   }
 };
 </script>
