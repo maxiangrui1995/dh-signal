@@ -8,6 +8,10 @@ html {
   background: #f7f7f7;
 }
 
+input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px white inset;
+}
+
 .el-menu {
   .fa {
     margin-right: 5px;

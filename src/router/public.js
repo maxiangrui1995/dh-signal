@@ -41,6 +41,7 @@ const region = [
     component: resolve => require(['@/views/region/Devs'], resolve)
   }
 ];
+
 const planList = [
   {
     path: '/planList',
@@ -136,6 +137,7 @@ const planList = [
     ]
   }
 ];
+
 const greenBelt = [{
   path: '/greenBelt',
   name: 'greenBelt',
@@ -161,6 +163,24 @@ const privilege = [{
   component: resolve => require(['@/views/privilege/Privilege'], resolve)
 }]
 
+const login = [{
+  path: '/login',
+  name: 'login',
+  meta: {
+    title: "登录-信号机控制平台"
+  },
+  component: resolve => require(['@/views/login/Login'], resolve)
+}]
+
+const test = [{
+  path: '/test',
+  name: 'test',
+  meta: {
+    title: "测试代码"
+  },
+  component: resolve => require(['@/components/Test'], resolve)
+}]
+
 export default [
   {
     path: '/',
@@ -170,7 +190,12 @@ export default [
     },
     component: resolve => require(['@/views/home/Home'], resolve),
     children: [
-      ...region, ...planList, ...greenBelt, ...privilege
+      ...region,
+      ...planList,
+      ...greenBelt,
+      ...privilege,
+      ...test
     ]
-  }
+  },
+  ...login,
 ]

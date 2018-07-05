@@ -7,16 +7,16 @@
         <span>{{userName}}</span>
       </div>
       <div class="layout-header-tools">
-        <el-tooltip class="layout-header-tools-btn-con" effect="dark" :content="hasNewMsg?'有最新消息':'暂无消息'" placement="bottom">
+        <el-tooltip class="layout-header-tools-btn-con" :content="hasNewMsg?'有最新消息':'暂无消息'">
           <el-badge is-dot class="item" :hidden="!hasNewMsg">
             <i class="fa fa-bell"></i>
           </el-badge>
         </el-tooltip>
-        <el-tooltip class="layout-header-tools-btn-con" effect="dark" content="用户设置" placement="bottom">
+        <el-tooltip class="layout-header-tools-btn-con" content="用户设置">
           <i class="fa fa-cog"></i>
         </el-tooltip>
-        <el-tooltip class="layout-header-tools-btn-con" effect="dark" content="退出系统" placement="bottom">
-          <i class="fa fa-sign-out"></i>
+        <el-tooltip class="layout-header-tools-btn-con" content="退出系统">
+          <i class="fa fa-sign-out" @click="handleLogout"></i>
         </el-tooltip>
       </div>
     </el-header>
@@ -82,6 +82,41 @@ export default {
   methods: {
     menuItemSelect(index, indexPath) {
       this.$router.push({ path: index });
+    },
+    handleLogout() {
+      this.$confirm("是否退出?", "提示", {
+        confirmButtonText: "退出",
+        cancelButtonText: "取消",
+        type: "warning",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "注销中...";
+            // ajax
+            this.$http("index/d_user/logout").then(res => {
+              if (res.status) {
+                setTimeout(() => {
+                  this.$router.push({
+                    name: "login"
+                  });
+                }, 600);
+              } else {
+                this.$message({
+                  type: "error",
+                  message: res.message
+                });
+              }
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(() => {})
+        .catch(() => {});
     }
   }
 };

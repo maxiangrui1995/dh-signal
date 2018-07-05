@@ -92,7 +92,9 @@ export default {
         inputPlaceholder: "请输入名称",
         // inputPattern: /[\u4e00-\u9fa5_a-zA-Z0-9_]{4,9}/,
         inputValidator: value => {
-          if (value.replace(/(^\s*)|(\s*$)/g, "")) {
+          if (!value) {
+            return false;
+          } else if (value.replace(/(^\s*)|(\s*$)/g, "")) {
             return true;
           } else {
             return false;
@@ -118,6 +120,7 @@ export default {
               instance.confirmButtonLoading = false;
             });
           } else {
+            instance.confirmButtonLoading = false;
             done();
           }
         }
@@ -148,7 +151,10 @@ export default {
               id: row.id
             }).then(res => {
               if (res.status) {
-                if ((this.pagePage - 1) * this.pageRows <= this.pageTotals) {
+                if (
+                  (this.pagePage - 1) * this.pageRows ==
+                  this.pageTotals - 1
+                ) {
                   this.pagePage--;
                 }
                 this.getDataList();
@@ -161,6 +167,7 @@ export default {
               instance.confirmButtonLoading = false;
             });
           } else {
+            instance.confirmButtonLoading = false;
             done();
           }
         }

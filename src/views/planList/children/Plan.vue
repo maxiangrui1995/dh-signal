@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-button type="primary" icon="el-icon-plus" @click="handleCreate" :style="{marginBottom: '10px'}">
-      新增
+      <span>新增</span>
     </el-button>
     <el-table :data="tableData" v-loading="tableLoading" style="width: 100%">
       <el-table-column prop="patternid" label="方案名称">
@@ -35,7 +35,7 @@
         <template slot-scope="scope">
           <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
           <div class="el-divider"></div>
-          <el-button type="text" @click="handleDelete(scope.row)" :disabled="scope.$index < pageTotals - 1 || pageTotals === 1">删除</el-button>
+          <el-button type="text" @click="handleDelete(scope.row)" :disabled="(pagePage-1)*pageRows+scope.$index+1!==pageTotals">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -85,29 +85,7 @@ export default {
       dialogVisible: false,
       dialogLoading: false,
       formData: {},
-      rules: {},
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
-        }
-      ]
+      rules: {}
     };
   },
   methods: {
@@ -176,6 +154,7 @@ export default {
               instance.confirmButtonLoading = false;
             });
           } else {
+            instance.confirmButtonLoading = false;
             done();
           }
         }
@@ -204,7 +183,10 @@ export default {
               id: row.id
             }).then(res => {
               if (res.status) {
-                if ((this.pagePage - 1) * this.pageRows <= this.pageTotals) {
+                if (
+                  (this.pagePage - 1) * this.pageRows ==
+                  this.pageTotals - 1
+                ) {
                   this.pagePage--;
                 }
                 this.getDataList();
@@ -217,6 +199,7 @@ export default {
               instance.confirmButtonLoading = false;
             });
           } else {
+            instance.confirmButtonLoading = false;
             done();
           }
         }
