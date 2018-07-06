@@ -9,8 +9,8 @@ export default {
   name: "gmap",
   data() {
     return {
-      lat: "119.77495282888412",
-      lng: "36.37174657521467"
+      lng: "119.77495282888412",
+      lat: "36.37174657521467"
     };
   },
   methods: {
@@ -39,7 +39,7 @@ export default {
         return img;
       };
       let localMapType = new LocalMapType();
-      let center = new google.maps.LatLng(this.lng, this.lat);
+      let center = new google.maps.LatLng(this.lat, this.lng);
       let gMap = new google.maps.Map(document.getElementById("gmap"), {
         zoom: 14,
         center: center,
@@ -55,6 +55,47 @@ export default {
       if (!gMap) {
         this.$Message.error("地图资源加载出错，请重新尝试！");
       }
+      this.OverlayView(gMap);
+      this.$store.dispatch("SETGMAP", gMap);
+    },
+    OverlayView(gmap) {
+      // 标题叠加层
+      function title(marker, htmlStr) {
+        this.marker = marker;
+        this.htmlStr = htmlStr;
+        this.setMap(marker.map);
+      }
+      title.prototype = new google.maps.OverlayView();
+      title.prototype.onAdd = function() {
+        var div = document.createElement("div");
+        div.innerHTML = this.htmlStr;
+        div.style.position = "absolute";
+        this.div_ = div;
+        /* 
+          MapPanes.mapPane（级别0）
+          MapPanes.overlayLayer（1级）
+          MapPanes.markerLayer（2级）
+          MapPanes.overlayMouseTarget（3级）
+          MapPanes.floatPane（4级）
+        */
+        // this.getPanes().overlayLayer.appendChild(div);
+        this.getPanes().floatPane.appendChild(div);
+      };
+      title.prototype.draw = function() {
+        var overlayProjection = this.getProjection();
+        var sw = overlayProjection.fromLatLngToDivPixel(this.marker.position);
+        var div = this.div_;
+        div.style.left = sw.x + 10 + "px";
+        div.style.top = sw.y - 30 + "px";
+      };
+      title.prototype.onRemove = function() {
+        this.div_.className = "fade-leave";
+        setTimeout(() => {
+          this.div_.parentNode.removeChild(this.div_);
+          this.div_ = null;
+        }, 500);
+      };
+      gmap.popover = title;
     }
   },
   created() {

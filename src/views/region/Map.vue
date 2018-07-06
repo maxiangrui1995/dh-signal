@@ -26,17 +26,13 @@ export default {
     };
   },
   methods: {
-    fetchData() {
-      if (this.crossingData.length) {
-        this.formatterData(this.crossingData);
-      } else {
-        this.$http("index/d_area/treeList").then(res => {
-          let data = res.data;
-          if (res.status === "1") {
-            this.$store.dispatch("SETCROSSING", data);
-          }
-        });
-      }
+    getDataList() {
+      this.$http("index/d_area/treeList").then(res => {
+        let data = res.data;
+        if (res.status === "1") {
+          this.$store.dispatch("SETCROSSING", data);
+        }
+      });
     },
     formatterData(data) {
       data.forEach(item => {
@@ -57,16 +53,41 @@ export default {
       });
       this.loading = false;
     },
-    drawMarker(){
-      
+    drawMarker() {
+      let data = this.crossing;
+      let p = new google.maps.LatLng(data.lat, data.lng);
+      let marker = new google.maps.Marker({
+        position: p,
+        icon: require("@/assets/marker_default.png"),
+        title: data.name,
+        id: data.id,
+        map: this.gmap,
+        draggable: true
+      });
+      let html = `<div class="overlay-poptip">
+                    <div class="overlay-poptip-content">
+                      <div class="overlay-poptip-arrow"></div>
+                      <div class="overlay-poptip-inner">
+                        <div class="overlay-poptip-title">
+                          hello
+                        </div>
+                        <div class="overlay-poptip-body">
+                          hello
+                        </div>
+                      </div>
+                    </div>
+                  </div>`;
+      new this.gmap.popover(marker, html);
+
+      this.gmap.panTo(p);
     }
-  },
-  created() {
-    this.fetchData();
   },
   computed: {
     crossingData() {
       return this.$store.state.crossingData;
+    },
+    gmap() {
+      return this.$store.state.gmap;
     }
   },
   watch: {
@@ -74,7 +95,14 @@ export default {
       this.formatterData(data);
     },
     crossing(data) {
-      console.log(data);
+      this.drawMarker();
+    },
+    gmap() {
+      if (this.crossingData.length) {
+        this.formatterData(this.crossingData);
+      } else {
+        this.getDataList();
+      }
     }
   }
 };

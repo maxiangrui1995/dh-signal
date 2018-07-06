@@ -28,35 +28,13 @@
                 <div class="el-divider"></div>
                 <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
                 <div class="el-divider"></div>
-                <el-popover placement="top" width="200" :ref="`popover-${scope.$index}`">
-                  <p>
-                    <i class="el-icon-question el-popover-box_status"></i>
-                    <span>确定删除这条记录吗?</span>
-                  </p>
-                  <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="scope._self.$refs[`popover-${scope.$index}`].doClose()">取消</el-button>
-                    <el-button type="primary" size="mini" @click="handleDelete(scope.row),scope._self.$refs[`popover-${scope.$index}`].doClose()">确定</el-button>
-                  </div>
-                  <el-button type="text" slot="reference">删除</el-button>
-                </el-popover>
+                <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-card>
       </el-main>
     </el-container>
-
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false">
-      <el-form :model="formData" :rules="rules" ref="form">
-        <el-form-item label="" prop="name">
-          <el-input clearable v-model="formData.name" placeholder="请输入名称"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleFormSubmit">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -67,55 +45,69 @@ export default {
       id1: this.$route.params.id1,
       name: "",
       loading: true,
-      tableData: [],
-      dialogVisible: false,
-      dialogTitle: "",
-      rules: {
-        name: [
-          { required: true, message: "请输入名称", trigger: "blur" },
-          {
-            min: 3,
-            max: 8,
-            message: "名称请限制在 3 到 5 个字符",
-            trigger: "blur"
-          }
-        ]
-      },
-      formData: {
-        name: ""
-      }
+      tableData: []
     };
   },
   methods: {
-    // 请求数据
-    fetchData() {
-      if (this.crossingData.length) {
-        this.formatterData(this.crossingData);
-      } else {
-        this.$http("index/d_area/treeList").then(res => {
-          let data = res.data;
-          if (res.status === "1") {
-            this.$store.dispatch("SETCROSSING", data);
-          }
-        });
-      }
+    getDataList() {
+      this.loading = true;
+      this.$http("index/d_area/treeList").then(res => {
+        let data = res.data;
+        if (res.status === "1") {
+          this.$store.dispatch("SETCROSSING", data);
+        }
+      });
     },
     formatterData(data) {
       data.forEach(item => {
-        if (item.id == this.id1 && item.children) {
-          this.tableData = item.children;
+        if (item.id == this.id1) {
+          this.tableData = item.children || [];
           this.name = item.name;
         }
       });
       this.loading = false;
     },
     handleCreate() {
-      this.dialogVisible = true;
-      this.dialogTitle = "区域新增";
-      this.formData = {};
-      if (this.$refs["form"]) {
-        this.$refs["form"].resetFields();
-      }
+      this.$prompt("输入名称后将新增一条记录", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputValidator: value => {
+          if (!value) {
+            return false;
+          } else if (value.replace(/(^\s*)|(\s*$)/g, "")) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        inputErrorMessage: "请填写名称",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "初始化中...";
+            // ajax
+            this.$http("index/d_area/dataAdd", {
+              name: instance.inputValue,
+              pid: this.id1
+            }).then(res => {
+              if (res.status) {
+                this.getDataList();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(() => {})
+        .catch(() => {});
     },
     handleDetails(row) {
       this.$router.push({
@@ -123,15 +115,82 @@ export default {
       });
     },
     handleUpdate(row) {
-      this.dialogVisible = true;
-      this.dialogTitle = "区域编辑";
-      this.formData = {
-        id: row.id,
-        name: row.name
-      };
+      this.$prompt("输入名称后将替换原有记录", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        inputValue: row.name,
+        inputValidator: value => {
+          if (!value) {
+            return false;
+          } else if (value.replace(/(^\s*)|(\s*$)/g, "")) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        inputErrorMessage: "请填写名称",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "保存中...";
+            // ajax
+            this.$http("index/d_area/dataUpdate", {
+              name: instance.inputValue,
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                this.getDataList();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(() => {})
+        .catch(() => {});
     },
     handleDelete(row) {
-      console.log(row);
+      this.$msgbox({
+        title: "提示",
+        message: "此操作将永久删除该文件, 是否继续?",
+        showCancelButton: true,
+        type: "warning",
+        confirmButtonText: "删除",
+        cancelButtonText: "放弃",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "删除中...";
+            // ajax
+            this.$http("index/d_area/dataDelete", {
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                this.getDataList();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(action => {})
+        .catch(action => {});
     },
     handleFormSubmit() {
       this.$refs["form"].validate(valid => {
@@ -140,7 +199,11 @@ export default {
     }
   },
   created() {
-    this.fetchData();
+    if (this.crossingData.length) {
+      this.formatterData(this.crossingData);
+    } else {
+      this.getDataList();
+    }
   },
   computed: {
     crossingData() {

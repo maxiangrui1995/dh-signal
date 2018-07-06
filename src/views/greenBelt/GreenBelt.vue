@@ -45,17 +45,7 @@
                                 <div class="el-divider"></div>
                                 <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
                                 <div class="el-divider"></div>
-                                <el-popover placement="top" width="200" :ref="`popover-${scope.$index}`">
-                                    <p>
-                                        <i class="el-icon-question el-popover-box_status"></i>
-                                        <span>确定删除这条记录吗?</span>
-                                    </p>
-                                    <div style="text-align: right; margin: 0">
-                                        <el-button size="mini" type="text" @click="scope._self.$refs[`popover-${scope.$index}`].doClose()">取消</el-button>
-                                        <el-button type="primary" size="mini" @click="handleDelete(scope.row),scope._self.$refs[`popover-${scope.$index}`].doClose()">确定</el-button>
-                                    </div>
-                                    <el-button type="text" slot="reference">删除</el-button>
-                                </el-popover>
+                                <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -86,17 +76,17 @@
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="时间范围" prop="datetimeRange" v-if="formData.type!='0'">
-                    <el-date-picker v-model="formData.datetimeRange" value-format="yyyy/MM/dd HH:mm" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                    <el-date-picker v-model="formData.datetimeRange" format="yyyy/MM/dd HH:mm" value-format="yyyy/MM/dd HH:mm" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="时间范围" prop="timeRange" v-else>
-                    <el-time-picker is-range v-model="formData.timeRange" value-format="HH:mm" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围" :style="{width: '400px'}">
+                    <el-time-picker is-range v-model="formData.timeRange" format="HH:mm" value-format="HH:mm" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围" :style="{width: '400px'}">
                     </el-time-picker>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="handleFormSubmit">确 定</el-button>
+                <el-button @click="handleFormCancel">取 消</el-button>
+                <el-button type="primary" @click="handleFormSubmit" :loading="dialogLoading">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -138,7 +128,8 @@ export default {
         type: "0",
         datetimeRange: "",
         timeRange: ""
-      }
+      },
+      dialogLoading: false
     };
   },
   methods: {
@@ -201,16 +192,61 @@ export default {
         type: row.type,
         datetimeRange:
           row.type === "1" ? [row.mon_day_start, row.mon_day_end] : "",
-        timeRange: row.type === "0" ? [row.mon_day_start, row.mon_day_end] : ""
+        timeRange: row.type === "0" ? [row.mon_day_start, row.mon_day_end] : "",
+        TYPE: "modify"
       };
     },
     handleDelete(row) {
-      console.log(row);
+      this.$msgbox({
+        title: "提示",
+        message: "此操作将永久删除该文件, 是否继续?",
+        showCancelButton: true,
+        type: "warning",
+        confirmButtonText: "删除",
+        cancelButtonText: "放弃",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "删除中...";
+            // ajax
+            this.$http("index/d_green_wave/dataDelete", {
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                if (
+                  (this.pagePage - 1) * this.pageRows ==
+                  this.pageTotals - 1
+                ) {
+                  this.pagePage--;
+                }
+                this.getDataList();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(action => {})
+        .catch(action => {});
     },
     handleFormSubmit() {
       this.$refs["form"].validate(valid => {
         if (!valid) return false;
+        this.dialogLoading = true;
+        console.log(this.formData);
       });
+    },
+    handleFormCancel() {
+      this.dialogVisible = false;
+      this.$refs["form"].resetFields();
     }
   },
   created() {
