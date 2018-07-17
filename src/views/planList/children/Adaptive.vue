@@ -70,7 +70,7 @@
                     </el-select>
                 </el-form-item>
             </el-form>
-            <span slot="footer" class="dialog-footer">
+            <span slot="footer" >
                 <el-button @click="handleFormCancel1">取 消</el-button>
                 <el-button type="primary" @click="handleFormSubmit1" :loading="dialogLoading1">确 定</el-button>
             </span>
@@ -90,7 +90,7 @@
                     </el-select>
                 </el-form-item>
             </el-form>
-            <span slot="footer" class="dialog-footer">
+            <span slot="footer" >
                 <el-button @click="handleFormCancel2">取 消</el-button>
                 <el-button type="primary" @click="handleFormSubmit2" :loading="dialogLoading2">确 定</el-button>
             </span>

@@ -1,11 +1,11 @@
 <template>
-  <el-container :style="{height: '100%'}">
+  <el-container class="layout" :style="{height: '100%'}">
     <el-header class="layout-header">
       <h3 class="layout-header-logo">道路交通信号机控制平台</h3>
-      <div class="layout-header-inner">
+      <!-- <div class="layout-header-inner">
         <span>欢迎您:&nbsp;</span>
         <span>{{userName}}</span>
-      </div>
+      </div> -->
       <div class="layout-header-tools">
         <el-tooltip class="layout-header-tools-btn-con" :content="hasNewMsg?'有最新消息':'暂无消息'">
           <el-badge is-dot class="item" :hidden="!hasNewMsg">
@@ -45,11 +45,11 @@ export default {
       hasNewMsg: false,
       userName: "admin",
       menuList: [
-        {
+        /*  {
           name: "workplace",
           title: "工作台",
           icon: "fa-tachometer"
-        },
+        }, */
         {
           name: "comprehensiveQuery",
           title: "综合查询",

@@ -11,7 +11,7 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.title) { document.title = to.meta.title }
-  if (to.name === 'login') {
+  if (to.name === 'login' || to.name === 'test' || to.name === 'error') {
     next();
   } else {
     if (!store.state.isLogin) {
@@ -25,6 +25,10 @@ router.beforeEach((to, from, next) => {
             name: 'login'
           });
         }
+      }).catch(() => {
+        next({
+          name: 'error'
+        });
       })
     } else {
       next();

@@ -24,7 +24,7 @@
           <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" v-for="item in tableData" :key="item.id" :style="{'margin-bottom':'10px'}">
             <el-card shadow="hover" :body-style="{ padding: '0px' }">
               <div class="box-image">
-                <img src="../../assets/crossing.jpg" alt="" style="width:100%;display:block">
+                <img :src="require('@/assets/crossing.jpg')" alt="" style="width:100%;display:block">
                 <div class="box-image-cover">
                   <div class="box-image-cover-wrapper">
                     <el-tooltip class="button" content="重新上传图片">
@@ -68,7 +68,7 @@
                 <div class="box-content-inner">
                   <el-button type="text" @click="handleBindDevs(item)" :style="{padding: '0'}">绑定设备</el-button>
                   <div class="el-divider"></div>
-                  <el-button type="text" :style="{padding: '0'}">删除路口</el-button>
+                  <el-button type="text" @click="handleDelete(item)" :style="{padding: '0'}">删除路口</el-button>
                 </div>
               </div>
             </el-card>
@@ -248,18 +248,45 @@ export default {
         path: "/region/" + this.id1 + "/" + this.id2 + "/" + row.id + "/map"
       });
     },
-
-
-    handleDetails(row) {
-      console.log(row);
+    handleDelete(row) {
+      this.$msgbox({
+        title: "提示",
+        message: "此操作将永久删除该文件, 是否继续?",
+        showCancelButton: true,
+        type: "warning",
+        confirmButtonText: "删除",
+        cancelButtonText: "放弃",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "删除中...";
+            // ajax
+            this.$http("index/d_crossing/dataDelete", {
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                this.getDataList();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(action => {})
+        .catch(action => {});
     },
     handleBindDevs(row) {
       this.$router.push({
         path: "/region/" + this.id1 + "/" + this.id2 + "/" + row.id + "/dev"
       });
-    },
-    handleDelete(row) {
-      console.log(row);
     }
   },
   created() {

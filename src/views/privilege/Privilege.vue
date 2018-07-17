@@ -25,10 +25,17 @@
             </el-table-column>
             <el-table-column prop="boundPlate" label="绑定警车">
             </el-table-column>
+            <el-table-column label="信号机">
+              <template slot-scope="scope">
+                <div>{{scope.row.children.length === 0 ? "未绑定" : scope.row.children.length + " 台"}}</div>
+              </template>
+            </el-table-column>
             <el-table-column prop="enabled" label="激活状态">
               <template slot-scope="scope">
-                <el-switch v-model="scope.row.enabled">
-                </el-switch>
+                <el-tooltip :content="scope.row.enabled==='1' ? '注销' : '激活'" placement="top">
+                  <el-switch v-model="scope.row.enabled" active-value="1" inactive-value="0" :style="{ margin: '1px' }">
+                  </el-switch>
+                </el-tooltip>
               </template>
             </el-table-column>
             <el-table-column label="操作" align="center" width="180">
@@ -37,17 +44,7 @@
                 <div class="el-divider"></div>
                 <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
                 <div class="el-divider"></div>
-                <el-popover placement="top" width="200" :ref="`popover-${scope.$index}`">
-                  <p>
-                    <i class="el-icon-question el-popover-box_status"></i>
-                    <span>确定删除这条记录吗?</span>
-                  </p>
-                  <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="scope._self.$refs[`popover-${scope.$index}`].doClose()">取消</el-button>
-                    <el-button type="primary" size="mini" @click="handleDelete(scope.row),scope._self.$refs[`popover-${scope.$index}`].doClose()">确定</el-button>
-                  </div>
-                  <el-button type="text" slot="reference">删除</el-button>
-                </el-popover>
+                <el-button type="text" @click="handleDelete(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -57,38 +54,21 @@
       </el-main>
     </el-container>
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false">
+    <el-dialog title="特勤联动新增" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="100px">
-        <el-form-item label="绿波带名称" prop="name">
-          <el-input clearable v-model="formData.name" placeholder="请输入名称" :style="{width: '400px'}"></el-input>
+        <el-form-item label="预案号" prop="sch_id">
+          <el-input v-model="formData.sch_id" placeholder="请输入预案号"></el-input>
         </el-form-item>
-        <el-form-item label="公共周期" prop="period">
-          <el-input-number v-model="formData.period" :min="0" :max="255"></el-input-number>
+        <el-form-item label="预案名称" prop="sch_name">
+          <el-input v-model="formData.sch_name" placeholder="请输入预案名称"></el-input>
         </el-form-item>
-        <el-form-item label="协调方向" prop="coordinate_direction">
-          <el-radio-group v-model="formData.coordinate_direction">
-            <el-radio label="1">正向</el-radio>
-            <el-radio label="2" disabled>双向</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="绿波类型" prop="type">
-          <el-radio-group v-model="formData.type">
-            <el-radio label="0">每天</el-radio>
-            <el-radio label="1">时间段</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="时间范围" prop="datetimeRange" v-if="formData.type!='0'">
-          <el-date-picker v-model="formData.datetimeRange" value-format="yyyy/MM/dd HH:mm" type="datetimerange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="时间范围" prop="timeRange" v-else>
-          <el-time-picker is-range v-model="formData.timeRange" value-format="HH:mm" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间" placeholder="选择时间范围" :style="{width: '400px'}">
-          </el-time-picker>
+        <el-form-item label="绑定警车" prop="boundPlate">
+          <el-input v-model="formData.boundPlate" placeholder="请输入车牌号"></el-input>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleFormSubmit">确 定</el-button>
+      <span slot="footer">
+        <el-button @click="handleFormCancel">取 消</el-button>
+        <el-button type="primary" @click="handleFormSubmit" :loading="dialogLoading">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -103,31 +83,77 @@ export default {
       pageTotals: 0,
       loading: true,
       tableData: [],
-      dialogVisible: false,
-      dialogTitle: "",
-      enabled: {
-        "0": "未激活",
-        "1": "已激活"
-      },
+      formData: {},
       rules: {
-        name: [
-          { required: true, message: "请输入名称", trigger: "blur" },
+        sch_id: [
+          { required: true, message: "请输入预案号" },
           {
-            min: 3,
-            max: 9,
-            message: "名称请限制在 3 到 9 个字符",
+            validator: (rule, value, callback) => {
+              let reg = /^[0-9]*$/;
+              if (!value) {
+                callback(new Error("请输入预案号"));
+              } else {
+                if (!reg.test(value)) {
+                  callback(new Error("预案号只能为数字"));
+                } else {
+                  this.$http("index/d_secret_service_plan/checkRepeat", {
+                    name: "sch_id",
+                    value: value
+                  }).then(res => {
+                    if (res.status === "1") {
+                      callback();
+                    } else {
+                      callback(new Error("预案号已存在"));
+                    }
+                  });
+                }
+              }
+            },
             trigger: "blur"
           }
+        ],
+        sch_name: [
+          { required: true, message: "请输入预案名" },
+          {
+            validator: (rule, value, callback) => {
+              if (!value) {
+                callback(new Error("请输入预案名"));
+              } else {
+                this.$http("index/d_secret_service_plan/checkRepeat", {
+                  name: "sch_name",
+                  value: value
+                }).then(res => {
+                  if (res.status === "1") {
+                    callback();
+                  } else {
+                    callback(new Error("预案名已存在"));
+                  }
+                });
+              }
+            },
+            trigger: "blur"
+          }
+        ],
+        boundPlate: [
+          {
+            validator: (rule, value, callback) => {
+              let reg = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$/;
+              if (!value) {
+                callback(new Error("请输入车牌号"));
+              } else {
+                if (reg.test(value)) {
+                  callback();
+                } else {
+                  callback(new Error("请输入正确的车牌号"));
+                }
+              }
+            }
+          },
+          { required: true, message: "请输入车牌号" }
         ]
       },
-      formData: {
-        name: "",
-        period: 0,
-        coordinate_direction: "1",
-        type: "0",
-        datetimeRange: "",
-        timeRange: ""
-      }
+      dialogVisible: false,
+      dialogLoading: false
     };
   },
   methods: {
@@ -141,12 +167,9 @@ export default {
       this.pagePage = page;
       this.fetchData();
     },
-    filterHandler(value, row, column) {
-      const property = column["property"];
-      return row[property] === value;
-    },
     // 请求数据
-    fetchData() {
+    getDataList() {
+      this.loading = true;
       this.$http("index/d_secret_service_plan/planList", {
         page: this.pagePage,
         rows: this.pageRows
@@ -161,41 +184,25 @@ export default {
     },
     handleCreate() {
       this.dialogVisible = true;
-      this.dialogTitle = "绿波带新增";
-      this.formData = {
-        name: "",
-        period: 0,
-        coordinate_direction: "1",
-        type: "0",
-        datetimeRange: "",
-        timeRange: ""
-      };
-      if (this.$refs["form"]) {
-        this.$refs["form"].resetFields();
-      }
+      /* this.$http("index/d_secret_service_plan/planAdd", {
+        data:
+          "(33,'测试专线1','苏A99998',1,null,null,null,null,null),(33,'测试专线1','苏A99998',2,null,null,null,null,null)"
+      }).then(res => {
+        this.$message({
+          type: res.status ? "success" : "error",
+          message: res.message
+        });
+      }); */
     },
     handleDetails(row) {
       this.$router.push({
-        path: "/greenBelt/" + row.id
+        path: "/privilege/" + row.sch_id
       });
-    },
-    handleUpdate(row) {
-      this.dialogVisible = true;
-      this.dialogTitle = "绿波带编辑";
-      this.formData = {
-        id: row.id,
-        name: row.name,
-        period: ~~row.period,
-        coordinate_direction: row.coordinate_direction,
-        type: row.type,
-        datetimeRange:
-          row.type === "1" ? [row.mon_day_start, row.mon_day_end] : "",
-        timeRange: row.type === "0" ? [row.mon_day_start, row.mon_day_end] : ""
-      };
     },
     handleDelete(row) {
       console.log(row);
     },
+    handleFormCancel() {},
     handleFormSubmit() {
       this.$refs["form"].validate(valid => {
         if (!valid) return false;
@@ -203,7 +210,7 @@ export default {
     }
   },
   created() {
-    this.fetchData();
+    this.getDataList();
   }
 };
 </script>

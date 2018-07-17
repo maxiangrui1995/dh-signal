@@ -7,6 +7,23 @@
         <i class="fa fa-mail-reply"></i>
       </el-button>
     </div>
+
+    <div style="position:absolute;right:20px;top:20px;">
+      <el-card :body-style="{ paddingBottom: '0px' }" :style="{width:'360px'}">
+        <div slot="header">{{name3}}</div>
+        <el-form ref="form" :model="formData" label-width="40px">
+          <el-form-item label="纬度">
+            <el-input v-model="formData.lat"></el-input>
+          </el-form-item>
+          <el-form-item label="经度">
+            <el-input v-model="formData.lng"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleSubmit">确定</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -22,7 +39,7 @@ export default {
       name1: "",
       name2: "",
       name3: "",
-      crossing: {}
+      formData: {}
     };
   },
   methods: {
@@ -43,8 +60,8 @@ export default {
               this.name2 = item.name;
               item.children.forEach(item => {
                 if (item.id == this.id3) {
-                  this.crossing = item;
                   this.name3 = item.name;
+                  this.formData = Object.assign({}, item);
                 }
               });
             }
@@ -53,8 +70,8 @@ export default {
       });
       this.loading = false;
     },
-    drawMarker() {
-      let data = this.crossing;
+    drawMarker(data) {
+      let self = this;
       let p = new google.maps.LatLng(data.lat, data.lng);
       let marker = new google.maps.Marker({
         position: p,
@@ -64,22 +81,39 @@ export default {
         map: this.gmap,
         draggable: true
       });
-      let html = `<div class="overlay-poptip">
-                    <div class="overlay-poptip-content">
-                      <div class="overlay-poptip-arrow"></div>
-                      <div class="overlay-poptip-inner">
-                        <div class="overlay-poptip-title">
-                          hello
-                        </div>
-                        <div class="overlay-poptip-body">
-                          hello
-                        </div>
-                      </div>
-                    </div>
-                  </div>`;
-      new this.gmap.popover(marker, html);
-
+      /* let html = `<div class="overlayview">${
+        this.name3
+      }<div class="overlayview-arrow"></div></div>`;
+      let popover = new this.gmap.popover(marker, html); */
       this.gmap.panTo(p);
+
+      // 添加拖动事件监听器
+      google.maps.event.addListener(marker, "drag", function() {
+        let p = marker.getPosition();
+        self.formData.lat = p.d;
+        self.formData.lng = p.e;
+      });
+    },
+    handleSubmit() {
+      let row = this.formData;
+
+      this.$http("index/d_crossing/dataUpdate", {
+        id: row.id,
+        name: row.name,
+        lat: row.lat,
+        lng: row.lng,
+        area_id: row.area_id,
+        direction: row.direction,
+        road_data: row.road_data
+      }).then(res => {
+        if (res.status) {
+          this.getDataList();
+        }
+        this.$message({
+          type: res.status ? "success" : "error",
+          message: res.message
+        });
+      });
     }
   },
   computed: {
@@ -94,8 +128,8 @@ export default {
     crossingData(data) {
       this.formatterData(data);
     },
-    crossing(data) {
-      this.drawMarker();
+    formData(data) {
+      this.drawMarker(data);
     },
     gmap() {
       if (this.crossingData.length) {
@@ -108,5 +142,12 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.tips {
+  display: table;
+  &-inner,
+  &-tools {
+    display: table-cell;
+  }
+}
 </style>

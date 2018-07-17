@@ -151,7 +151,7 @@ const greenBelt = [{
   meta: {
     title: "绿波带"
   },
-  component: resolve => require(['@/views/greenBelt/Map'], resolve)
+  component: resolve => require(['@/views/greenBelt/Details'], resolve)
 }];
 
 const privilege = [{
@@ -161,6 +161,29 @@ const privilege = [{
     title: "特勤联动"
   },
   component: resolve => require(['@/views/privilege/Privilege'], resolve)
+}, {
+  path: '/privilege/:id',
+  name: 'privilege-details',
+  meta: {
+    title: "特勤联动"
+  },
+  component: resolve => require(['@/views/privilege/Details'], resolve)
+}]
+
+const query = [{
+  path: '/comprehensiveQuery',
+  name: 'comprehensiveQuery',
+  meta: {
+    title: "综合查询"
+  },
+  component: resolve => require(['@/views/comprehensiveQuery/Query'], resolve)
+}, {
+  path: '/comprehensiveQuery/:id',
+  name: 'comprehensiveQuery-view',
+  meta: {
+    title: "综合查询"
+  },
+  component: resolve => require(['@/views/comprehensiveQuery/View'], resolve)
 }]
 
 const login = [{
@@ -181,12 +204,23 @@ const test = [{
   component: resolve => require(['@/components/Test'], resolve)
 }]
 
+const error = {
+  path: '/error',
+  name: 'error',
+  meta: {
+    title: "出错啦！"
+  },
+  component: resolve => require(['@/components/ErrorPage'], resolve)
+}
+
 export default [
   {
     path: '/',
     name: 'home',
     meta: {
       title: "信号机控制平台"
+    }, redirect: {
+      name: "comprehensiveQuery"
     },
     component: resolve => require(['@/views/home/Home'], resolve),
     children: [
@@ -194,8 +228,10 @@ export default [
       ...planList,
       ...greenBelt,
       ...privilege,
-      ...test
+      ...test,
+      ...query
     ]
   },
   ...login,
+  error
 ]

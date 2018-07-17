@@ -63,7 +63,7 @@
         </div>
       </el-form>
       <el-button plain size="medium" @click="handleItemCreate()" :style="{width: '100%'}">新 增</el-button>
-      <span slot="footer" class="dialog-footer">
+      <span slot="footer" >
         <el-button @click="handleFormCancel">取 消</el-button>
         <el-button type="primary" @click="handleFormSubmit" :loading="dialogLoading">确 定</el-button>
       </span>

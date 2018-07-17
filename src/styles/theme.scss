@@ -1,0 +1,112 @@
+$body-background-color:#193c7e;
+$layout-header-color:linear-gradient(to right, #648dba 10%, #5f95c5 10%, #6196c4 20%, #1d58c7);
+/*  */
+
+.layout {
+  background: $body-background-color;
+  .layout-header {
+    background: $layout-header-color;
+    color: #fff;
+  }
+  .el-menu {
+    border-right: solid 1px transparent;
+    background: linear-gradient(135deg, #266eb3, #4b9cd1);
+    &-item {
+      color: #fff;
+      &:focus,
+      &:hover {
+        background: #3a66a3
+      }
+      i {
+        color: #fff;
+      }
+    }
+    &-item.is-active {
+      color: #d5d359
+    }
+  }
+  .page-header {
+    background: #115198;
+    border-bottom: 1px solid transparent;
+    .el-breadcrumb__item:last-child .el-breadcrumb__inner {
+      color: #d5d359;
+    }
+    .el-breadcrumb__inner a,
+    .el-breadcrumb__inner.is-link {
+      color: #d5dce8;
+    }
+    .el-input__inner {
+      background: transparent;
+      border: 1px solid #2963a3;
+      color: #d5dce8;
+    }
+  }
+  .el-card {
+    background: #115198;
+    border-color: #115198;
+  }
+  /* 表格 */
+  .el-table {
+    color: #d5dce8;
+    background-color: transparent;
+    &:before {
+      background-color: transparent;
+    }
+    thead {
+      color: #96b0d0;
+    }
+    th {
+      background-color: #195aa2;
+    }
+    th.is-leaf {
+      border-bottom: 1px solid #2963a3;
+    }
+    tr {
+      background-color: #115198;
+    }
+    td {
+      border-bottom: 1px solid #2963a3;
+    }
+    .el-table__empty-text {
+      color: #d5dce8;
+    }
+  }
+  .el-table--enable-row-hover .el-table__body tr:hover>td {
+    background-color: #2963a3;
+  }
+  /* 分页 */
+  .el-pagination {
+    color: #d5dce8;
+    .el-pagination__total {
+      color: #d5dce8;
+    }
+    .el-input__inner {
+      background: transparent;
+      border: 1px solid #2963a3;
+      color: #d5dce8;
+    }
+    .btn-next,
+    .btn-prev {
+      background: transparent;
+      color: #d5dce8;
+    }
+    button:disabled {
+      background: transparent;
+    }
+    .el-pagination__jump {
+      color: #d5dce8
+    }
+  }
+  .el-pager {
+    li {
+      background: transparent;
+    }
+    li.active {
+      color: #d5d359;
+    }
+  }
+  /* loading mask */
+  .el-loading-mask {
+    background-color: rgba(17, 80, 151, 0.8);
+  }
+}

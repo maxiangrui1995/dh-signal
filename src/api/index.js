@@ -1,7 +1,15 @@
 import Vue from "vue"
 import axios from "axios"
 
-axios.defaults.baseURL = "/api/"
+// 环境默认指向开发环境
+const env = process.env.NODE_ENV || "development";
+if (env === 'production') {
+  // axios.defaults.baseURL = "../";
+  axios.defaults.baseURL = "../web/public/index.php";
+} else {
+  axios.defaults.baseURL = "/api/";
+}
+
 axios.defaults.headers.post["Content-Type"] =
   "application/x-www-form-urlencoded"
 

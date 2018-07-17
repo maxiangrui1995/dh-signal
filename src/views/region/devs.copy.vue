@@ -52,7 +52,7 @@
             </el-card>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+        <!-- <el-row :gutter="20">
           <el-col :xs="24" :md="12" :style="{marginBottom: '20px'}">
             <el-card shadow="never">
               <div slot="header">
@@ -73,9 +73,19 @@
                 </el-table-column>
                 <el-table-column label="操作" align="center" width="180">
                   <template slot-scope="scope">
-                    <el-button type="text" @click="handleUpdateCamera(scope.row)">编辑</el-button>
+                    <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
                     <div class="el-divider"></div>
-                    <el-button type="text" @click="handleDeleteCamera(scope.row)">删除</el-button>
+                    <el-popover placement="top" width="200" :ref="`popover-${scope.$index}`">
+                      <p>
+                        <i class="el-icon-question el-popover-box_status"></i>
+                        <span>确定删除这条记录吗?</span>
+                      </p>
+                      <div style="text-align: right; margin: 0">
+                        <el-button size="mini" type="text" @click="scope._self.$refs[`popover-${scope.$index}`].doClose()">取消</el-button>
+                        <el-button type="primary" size="mini" @click="handleDelete(scope.row),scope._self.$refs[`popover-${scope.$index}`].doClose()">确定</el-button>
+                      </div>
+                      <el-button type="text" slot="reference">删除</el-button>
+                    </el-popover>
                   </template>
                 </el-table-column>
               </el-table>
@@ -94,19 +104,29 @@
                 </el-table-column>
                 <el-table-column label="操作" align="center" width="180">
                   <template slot-scope="scope">
-                    <el-button type="text" @click="handleUpdateIpc(scope.row)">编辑</el-button>
+                    <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
                     <div class="el-divider"></div>
-                    <el-button type="text" @click="handleDeleteIpc(scope.row)">删除</el-button>
+                    <el-popover placement="top" width="200" :ref="`popover-${scope.$index}`">
+                      <p>
+                        <i class="el-icon-question el-popover-box_status"></i>
+                        <span>确定删除这条记录吗?</span>
+                      </p>
+                      <div style="text-align: right; margin: 0">
+                        <el-button size="mini" type="text" @click="scope._self.$refs[`popover-${scope.$index}`].doClose()">取消</el-button>
+                        <el-button type="primary" size="mini" @click="handleDelete(scope.row),scope._self.$refs[`popover-${scope.$index}`].doClose()">确定</el-button>
+                      </div>
+                      <el-button type="text" slot="reference">删除</el-button>
+                    </el-popover>
                   </template>
                 </el-table-column>
               </el-table>
             </el-card>
           </el-col>
-        </el-row>
+        </el-row> -->
       </el-main>
     </el-container>
 
-    <el-dialog :title="dialogCameraTitle" :visible.sync="dialogCameraVisible" width="30%" :close-on-click-modal="false">
+    <!-- <el-dialog :title="dialogCameraTitle" :visible.sync="dialogCameraVisible" width="30%" :close-on-click-modal="false">
       <el-form :model="cameraFormData" :rules="cameraFormRules" ref="cameraForm" label-width="60px">
         <el-form-item label="相机IP" prop="ip">
           <el-input v-model="cameraFormData.ip"></el-input>
@@ -128,13 +148,39 @@
         <el-button @click="dialogCameraVisible = false">取 消</el-button>
         <el-button type="primary" @click="handleCameraSubmit">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
 export default {
   data() {
+    const validateUser = (rule, value, callback) => {
+      // 0到26位（字母，数字，下划线，减号）
+      let reg = /^[a-zA-Z0-9_-]{0,26}$/;
+      if (value === "") {
+        callback(new Error("请输入账号"));
+      } else {
+        if (reg.test(value)) {
+          callback();
+        } else {
+          callback(new Error("账号格式不正确"));
+        }
+      }
+    };
+    const validatePass = (rule, value, callback) => {
+      // 0到26位（字母，数字，下划线，减号）
+      let reg = /^[a-zA-Z0-9_-]{0,26}$/;
+      if (value === "") {
+        callback(new Error("请输入密码"));
+      } else {
+        if (reg.test(value)) {
+          callback();
+        } else {
+          callback(new Error("密码格式不正确"));
+        }
+      }
+    };
     return {
       id1: this.$route.params.id1,
       id2: this.$route.params.id2,
@@ -152,14 +198,40 @@ export default {
         "2": "车流量相机"
       },
       ipReg: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
-      dialogCameraTitle: "",
       dialogCameraVisible: false,
+      dialogCameraTitle: "",
       cameraFormData: {},
-      cameraFormRules: {}
+      cameraFormRules: {
+        ip: [
+          {
+            validator: (rule, value, callback) => {
+              if (value === "") {
+                callback(new Error("请输入ip"));
+              } else {
+                if (this.ipReg.test(value)) {
+                  callback();
+                } else {
+                  callback(new Error("请输入正确的ip"));
+                }
+              }
+            }
+          }
+        ],
+        username: [
+          {
+            validator: validateUser
+          }
+        ],
+        password: [
+          {
+            validator: validatePass
+          }
+        ]
+      }
     };
   },
   methods: {
-    getCrossingData() {
+    fetchData() {
       this.$http("index/d_area/treeList").then(res => {
         let data = res.data;
         if (res.status === "1") {
@@ -167,7 +239,7 @@ export default {
         }
       });
     },
-    getDvesData() {
+    fetchDevData() {
       this.loading = true;
       this.$http("index/d_crossing/dataView", { id: this.id3 }).then(res => {
         if (res.status) {
@@ -198,11 +270,8 @@ export default {
       });
       this.loading = false;
     },
-    handleCreate_signal_ups(row, type) {
-      let url =
-        type === "signal" ? "index/d_machine/dataAdd" : "index/d_ups/dataAdd";
-      let port = type === "signal" ? "4001" : "500";
-      this.$prompt("输入IP后将在路口下绑定该设备", "提示", {
+    handleCreateSignal() {
+      this.$prompt("输入信号机IP后将在路口下绑定该设备", "提示", {
         confirmButtonText: "绑定",
         cancelButtonText: "取消",
         inputPattern: this.ipReg,
@@ -212,13 +281,13 @@ export default {
             instance.confirmButtonLoading = true;
             instance.confirmButtonText = "绑定中...";
             // ajax
-            this.$http(url, {
+            this.$http("index/d_machine/dataAdd", {
               ip: instance.inputValue,
-              port: port,
+              port: 4001,
               crossing_id: this.id3
             }).then(res => {
               if (res.status) {
-                this.getDvesData();
+                this.fetchDevData();
               }
               this.$message({
                 type: res.status ? "success" : "error",
@@ -236,12 +305,8 @@ export default {
         .then(() => {})
         .catch(() => {});
     },
-    handleUpdate_signal_ups(row, type) {
-      let url =
-        type === "signal"
-          ? "index/d_machine/dataUpdate"
-          : "index/d_ups/dataUpdate";
-      this.$prompt("输入IP后将绑定该设备以替换旧设备", "提示", {
+    handleUpdateSignal(row) {
+      this.$prompt("输入信号机IP后将绑定该设备以替换旧设备", "提示", {
         confirmButtonText: "替换",
         cancelButtonText: "取消",
         inputValue: row.ip,
@@ -252,14 +317,14 @@ export default {
             instance.confirmButtonLoading = true;
             instance.confirmButtonText = "替换中...";
             // ajax
-            this.$http(url, {
+            this.$http("index/d_machine/dataUpdate", {
               ip: instance.inputValue,
               port: row.port,
               crossing_id: row.crossing_id,
               id: row.id
             }).then(res => {
               if (res.status) {
-                this.getDvesData();
+                this.fetchDevData();
               }
               this.$message({
                 type: res.status ? "success" : "error",
@@ -277,11 +342,7 @@ export default {
         .then(() => {})
         .catch(() => {});
     },
-    handleDelete_signal_ups(row, type) {
-      let url =
-        type === "signal"
-          ? "index/d_machine/dataDelete"
-          : "index/d_ups/dataDelete";
+    handleDeleteSignal(row) {
       this.$msgbox({
         title: "提示",
         message: "此操作将解绑该设备, 是否继续?",
@@ -294,11 +355,11 @@ export default {
             instance.confirmButtonLoading = true;
             instance.confirmButtonText = "解绑中...";
             // ajax
-            this.$http(url, {
+            this.$http("index/d_machine/dataDelete", {
               id: row.id
             }).then(res => {
               if (res.status) {
-                this.getDvesData();
+                this.fetchDevData();
               }
               this.$message({
                 type: res.status ? "success" : "error",
@@ -316,6 +377,115 @@ export default {
         .then(action => {})
         .catch(action => {});
     },
+
+    handleCreateUps() {
+      this.$prompt("输入信号机IP后将在路口下绑定该设备", "提示", {
+        confirmButtonText: "绑定",
+        cancelButtonText: "取消",
+        inputPattern: this.ipReg,
+        inputErrorMessage: "请填写正确ip",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "绑定中...";
+            // ajax
+            this.$http("index/d_ups/dataAdd", {
+              ip: instance.inputValue,
+              port: 5000,
+              crossing_id: this.id3
+            }).then(res => {
+              if (res.status) {
+                this.fetchDevData();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(() => {})
+        .catch(() => {});
+    },
+    handleUpdateUps(row) {
+      this.$prompt("输入信号机IP后将绑定该设备以替换旧设备", "提示", {
+        confirmButtonText: "替换",
+        cancelButtonText: "取消",
+        inputValue: row.ip,
+        inputPattern: this.ipReg,
+        inputErrorMessage: "请填写正确ip",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "替换中...";
+            // ajax
+            this.$http("index/d_ups/dataUpdate", {
+              ip: instance.inputValue,
+              port: row.port,
+              crossing_id: row.crossing_id,
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                this.fetchDevData();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(() => {})
+        .catch(() => {});
+    },
+    handleDeleteUps(row) {
+      this.$msgbox({
+        title: "提示",
+        message: "此操作将解绑该设备, 是否继续?",
+        showCancelButton: true,
+        type: "warning",
+        confirmButtonText: "解绑",
+        cancelButtonText: "放弃",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "解绑中...";
+            // ajax
+            this.$http("index/d_ups/dataDelete", {
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                this.fetchDevData();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(action => {})
+        .catch(action => {});
+    },
+
     handleCreateCamera() {
       this.dialogCameraVisible = true;
       this.dialogCameraTitle = "相机新增";
@@ -326,21 +496,15 @@ export default {
         password: ""
       };
     },
-    handleUpdateCamera() {},
-    handleCameraSubmit() {
-      console.log(this.cameraFormData);
-    },
-    handleDeleteCamera() {},
-    handleCreateIpc() {},
-    handleUpdateIpc() {},
-    handleDeleteIpc() {}
+    handleCameraSubmit() {},
+    handleCreateIpc() {}
   },
   created() {
-    this.getDvesData();
+    this.fetchDevData();
     if (this.crossingData.length) {
       this.formatterData(this.crossingData);
     } else {
-      this.getCrossingData();
+      this.fetchData();
     }
   },
   computed: {

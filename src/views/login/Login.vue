@@ -88,6 +88,8 @@ export default {
 .login-wrapper {
   width: 100%;
   height: 100%;
+  background: url("~@/assets/login_background.svg") no-repeat;
+  background-size: 100%;
 }
 .login-con {
   position: absolute;

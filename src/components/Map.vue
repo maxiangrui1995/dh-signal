@@ -85,7 +85,7 @@ export default {
         var overlayProjection = this.getProjection();
         var sw = overlayProjection.fromLatLngToDivPixel(this.marker.position);
         var div = this.div_;
-        div.style.left = sw.x + 10 + "px";
+        div.style.left = sw.x + 18 + "px";
         div.style.top = sw.y - 30 + "px";
       };
       title.prototype.onRemove = function() {
