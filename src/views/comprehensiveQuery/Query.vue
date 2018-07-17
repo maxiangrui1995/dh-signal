@@ -1,11 +1,12 @@
 <template>
-  <el-container>
+  <el-container class="query-wrapper">
     <el-header class="page-header" :style="{height: 'auto'}">
       <div class="box">
         <div class="box-inner">
           <div class="box-inner-content">
             <div class="box-inner-content-label">区域:</div>
-            <div class="box-inner-content-inner" ref="crossing_box">
+            <div class="box-inner-content-inner no-content" v-if="crossing_1.length==0">暂无数据</div>
+            <div class="box-inner-content-inner" ref="crossing_box" v-else>
               <div class="box-inner-content-item" v-for="(item, index) in crossing_1" :key="index">
                 <span class="tag">{{item.name}}</span>
               </div>
@@ -14,7 +15,8 @@
           </div>
           <div class="box-inner-content">
             <div class="box-inner-content-label">道路:</div>
-            <div class="box-inner-content-inner" ref="crossing_box1">
+            <div class="box-inner-content-inner no-content" v-if="crossing_2.length==0">暂无数据</div>
+            <div class="box-inner-content-inner" ref="crossing_box1" v-else>
               <div class="box-inner-content-item" v-for="(item, index) in crossing_2" :key="index">
                 <span class="tag">{{item.name}}</span>
               </div>
@@ -22,7 +24,8 @@
           </div>
           <div class="box-inner-content">
             <div class="box-inner-content-label">路口:</div>
-            <div class="box-inner-content-inner" ref="crossing_box2">
+            <div class="box-inner-content-inner no-content" v-if="crossing_3.length==0">暂无数据</div>
+            <div class="box-inner-content-inner" ref="crossing_box2" v-else>
               <div class="box-inner-content-item" v-for="(item, index) in crossing_3" :key="index">
                 <span class="tag">{{item.name}}</span>
               </div>
@@ -131,6 +134,7 @@ export default {
   &-inner {
     &-content {
       position: relative;
+      min-height: 40px;
       &-inner {
         margin: 0 50px;
         border-bottom: 1px dashed #ccc;
@@ -150,6 +154,11 @@ export default {
         right: 0;
         padding: 6px 4px;
         line-height: 24px;
+      }
+      .no-content {
+        height: 38px;
+        line-height: 36px;
+        color: #909399;
       }
     }
     &-content:last-child > &-content-inner {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="crossing-setting">
     <el-container>
       <el-header class="page-header">
         <div class="page-header-inner">
@@ -32,11 +32,11 @@
                         <i class="el-icon-upload"></i>
                       </el-button>
                     </el-tooltip>
-                    <el-tooltip class="button" content="查看大图">
+                   <!--  <el-tooltip class="button" content="查看大图">
                       <el-button type="text" @click="handleViewImage(item)">
                         <i class="el-icon-view"></i>
                       </el-button>
-                    </el-tooltip>
+                    </el-tooltip> -->
                   </div>
                 </div>
               </div>
@@ -49,14 +49,14 @@
                     </el-button>
                   </el-tooltip>
                 </div>
-                <div class="box-content-inner">
+                <!--  <div class="box-content-inner">
                   <span class="item">{{ crossingType[item.direction] }}</span>
                   <el-tooltip class="button" content="编辑">
                     <el-button type="text">
                       <i class="el-icon-edit"></i>
                     </el-button>
                   </el-tooltip>
-                </div>
+                </div> -->
                 <div class="box-content-inner">
                   <span class="item">{{formatterLatLng(item.lat)}} , {{formatterLatLng(item.lng)}}</span>
                   <el-tooltip class="button" content="地图">

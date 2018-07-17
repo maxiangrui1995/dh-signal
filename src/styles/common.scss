@@ -71,6 +71,10 @@ input:-webkit-autofill {
   color: #e6a23c;
 }
 
+.el-dialog__headerbtn {
+  top: 24px;
+}
+
 .layout-header {
   box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
   background: #fff;
@@ -159,7 +163,7 @@ input:-webkit-autofill {
     }
   }
   &-body {
-    padding: 8px 16px;
+    padding: 8px 14px;
     &-inner {
       height: 24px;
       line-height: 24px;

@@ -1,5 +1,5 @@
 module.exports = {
-  baseUrl: "/SignalControl/dist",
+  baseUrl: process.env.NODE_ENV === "production" ? "SignalControl/dist" : "/",
   outputDir: "dist",
   assetsDir: "static",
   productionSourceMap: false,

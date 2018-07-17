@@ -4,12 +4,17 @@ import router from './router/index'
 import store from './store/index'
 import './api/index'
 import ElementUI from 'element-ui'
+import echarts from 'echarts'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.min.css'
 import './styles/common.scss'
 import './styles/theme.scss'
 
+import './mock/index'
+
 Vue.config.productionTip = false
+
+Vue.prototype.$echarts = echarts
 
 Vue.use(ElementUI, {
   size: 'small'

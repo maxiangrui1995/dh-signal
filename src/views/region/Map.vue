@@ -9,19 +9,18 @@
     </div>
 
     <div style="position:absolute;right:20px;top:20px;">
-      <el-card :body-style="{ paddingBottom: '0px' }" :style="{width:'360px'}">
-        <div slot="header">{{name3}}</div>
-        <el-form ref="form" :model="formData" label-width="40px">
-          <el-form-item label="纬度">
-            <el-input v-model="formData.lat"></el-input>
-          </el-form-item>
-          <el-form-item label="经度">
-            <el-input v-model="formData.lng"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="handleSubmit">确定</el-button>
-          </el-form-item>
-        </el-form>
+      <el-card :body-style="{ padding: '10px' }" :style="{width:'360px'}" class="map-card">
+        <div class="pos-wrapper">
+          <div class="pos-wrapper-inner">
+            <div>拖动路口图标进行定位</div>
+            <div class="num">
+              <span>{{formData.lat}},{{formData.lng}}</span>
+            </div>
+          </div>
+          <div class="pos-wrapper-inner">
+            <el-button type="text" @click="handleSubmit" :style="{padding: '0'}">保存</el-button>
+          </div>
+        </div>
       </el-card>
     </div>
   </div>
@@ -39,7 +38,8 @@ export default {
       name1: "",
       name2: "",
       name3: "",
-      formData: {}
+      formData: {},
+      marker: null
     };
   },
   methods: {
@@ -73,14 +73,14 @@ export default {
     drawMarker(data) {
       let self = this;
       let p = new google.maps.LatLng(data.lat, data.lng);
-      let marker = new google.maps.Marker({
+      let marker = (this.marker = new google.maps.Marker({
         position: p,
         icon: require("@/assets/marker_default.png"),
         title: data.name,
         id: data.id,
         map: this.gmap,
         draggable: true
-      });
+      }));
       /* let html = `<div class="overlayview">${
         this.name3
       }<div class="overlayview-arrow"></div></div>`;
@@ -94,6 +94,7 @@ export default {
         self.formData.lng = p.e;
       });
     },
+    changeMarkerPos() {},
     handleSubmit() {
       let row = this.formData;
 
@@ -148,6 +149,27 @@ export default {
   &-inner,
   &-tools {
     display: table-cell;
+  }
+}
+.pos-wrapper {
+  width: 340px;
+  &-inner {
+    display: inline-block;
+    vertical-align: middle;
+    .num {
+      font-size: 12px;
+      color: #606266;
+      margin-top: 6px;
+    }
+  }
+  &-inner:nth-child(1) {
+    width: 279px;
+    border-right: 1px solid #dfe1e6;
+    overflow: hidden;
+  }
+  &-inner:nth-child(2) {
+    width: 60px;
+    text-align: center;
   }
 }
 </style>

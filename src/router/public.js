@@ -1,6 +1,4 @@
-
-const region = [
-  {
+const region = [{
     path: '/region',
     name: 'region',
     meta: {
@@ -42,8 +40,7 @@ const region = [
   }
 ];
 
-const planList = [
-  {
+const planList = [{
     path: '/planList',
     name: 'planList',
     meta: {
@@ -61,8 +58,7 @@ const planList = [
       name: "planList-detail-base"
     },
     component: resolve => require(['@/views/planList/children/Index'], resolve),
-    children: [
-      {
+    children: [{
         path: '/planList/:id/base',
         name: 'planList-detail-base',
         meta: {
@@ -179,11 +175,25 @@ const query = [{
   component: resolve => require(['@/views/comprehensiveQuery/Query'], resolve)
 }, {
   path: '/comprehensiveQuery/:id',
-  name: 'comprehensiveQuery-view',
+  name: 'comprehensiveQuery-map',
   meta: {
     title: "综合查询"
   },
-  component: resolve => require(['@/views/comprehensiveQuery/View'], resolve)
+  component: resolve => require(['@/views/comprehensiveQuery/Map'], resolve)
+}, {
+  path: '/comprehensiveQuery/:id/view',
+  name: 'comprehensiveQuery-view',
+  meta: {
+    title: "实时监控"
+  },
+  component: resolve => require(['@/views/comprehensiveQuery/RealtimeView'], resolve)
+}, {
+  path: '/comprehensiveQuery/:id/video',
+  name: 'comprehensiveQuery-video',
+  meta: {
+    title: "实时视频"
+  },
+  component: resolve => require(['@/views/comprehensiveQuery/Video'], resolve)
 }]
 
 const login = [{
@@ -213,13 +223,13 @@ const error = {
   component: resolve => require(['@/components/ErrorPage'], resolve)
 }
 
-export default [
-  {
+export default [{
     path: '/',
     name: 'home',
     meta: {
       title: "信号机控制平台"
-    }, redirect: {
+    },
+    redirect: {
       name: "comprehensiveQuery"
     },
     component: resolve => require(['@/views/home/Home'], resolve),
