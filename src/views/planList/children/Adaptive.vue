@@ -1,101 +1,101 @@
 <template>
-    <div>
-        <el-table :data="tableData1" v-loading="tableLoading1" style="width: 100%">
-            <el-table-column prop="statistic_minutes" label="统计时间间隔" width="100" align="center">
-            </el-table-column>
-            <el-table-column prop="do_minutes" label="触发时间间隔" width="100" align="center">
-            </el-table-column>
-            <el-table-column prop="flow_total" label="触发流量总数" width="100" align="center">
-            </el-table-column>
-            <el-table-column prop="lane_east_west" label="东西向车道号">
-                <template slot-scope="scope">
-                    <el-tag v-for="item in scope.row.lane_east_west.split(',')" :key="item" :style="{margin: '2px 4px 2px 0'}">{{item}}</el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column prop="lane_south_north" label="南北向车道号">
-                <template slot-scope="scope">
-                    <el-tag v-for="item in scope.row.lane_south_north.split(',')" :key="item" :style="{margin: '2px 4px 2px 0'}">{{item}}</el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column label="操作" align="center">
-                <template slot-scope="scope">
-                    <el-button type="text" @click="handleUpdate1(scope.row)">编辑</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-button type="primary" icon="el-icon-plus" @click="handleCreate" :style="{margin: '20px 0 10px'}">
-            <span>新增</span>
-        </el-button>
-        <el-table :data="tableData2" v-loading="tableLoading2" style="width: 100%">
-            <el-table-column prop="proportion" label="东西与南北车流量比例" align="center">
-                <template slot-scope="scope">
-                    <span>{{scope.row.proportion_east_west}} : {{scope.row.proportion_south_north}} </span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="pattern_id" label="需要触发的方案编号" align="center">
-                <template slot-scope="scope">
-                    <span>方案{{~~scope.row.pattern_id + 1}}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="操作" align="center">
-                <template slot-scope="scope">
-                    <el-button type="text" @click="handleUpdate2(scope.row)">编辑</el-button>
-                    <div class="el-divider"></div>
-                    <el-button type="text" @click="handleDelete2(scope.row)">删除</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination @size-change="pageSizeChange2" @current-change="pageCurrentChange2" :current-page="pagePage2" :page-size="pageRows2" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals2" v-if="pageTotals2>0" :style="{'margin':'10px 0 0','text-align':'right'}">
-        </el-pagination>
+  <div>
+    <el-table :data="tableData1" v-loading="tableLoading1" style="width: 100%">
+      <el-table-column prop="statistic_minutes" label="统计时间间隔" width="100" align="center">
+      </el-table-column>
+      <el-table-column prop="do_minutes" label="触发时间间隔" width="100" align="center">
+      </el-table-column>
+      <el-table-column prop="flow_total" label="触发流量总数" width="100" align="center">
+      </el-table-column>
+      <el-table-column prop="lane_east_west" label="东西向车道号">
+        <template slot-scope="scope">
+          <el-tag v-for="item in scope.row.lane_east_west.split(',')" :key="item" :style="{margin: '2px 4px 2px 0'}">{{item}}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="lane_south_north" label="南北向车道号">
+        <template slot-scope="scope">
+          <el-tag v-for="item in scope.row.lane_south_north.split(',')" :key="item" :style="{margin: '2px 4px 2px 0'}">{{item}}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center">
+        <template slot-scope="scope">
+          <el-button type="text" @click="handleUpdate1(scope.row)">编辑</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-button type="primary" icon="el-icon-plus" @click="handleCreate" :style="{margin: '20px 0 10px'}">
+      <span>新增</span>
+    </el-button>
+    <el-table :data="tableData2" v-loading="tableLoading2" style="width: 100%">
+      <el-table-column prop="proportion" label="东西与南北车流量比例" align="center">
+        <template slot-scope="scope">
+          <span>{{scope.row.proportion_east_west}} : {{scope.row.proportion_south_north}} </span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="pattern_id" label="需要触发的方案编号" align="center">
+        <template slot-scope="scope">
+          <span>方案{{~~scope.row.pattern_id + 1}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center">
+        <template slot-scope="scope">
+          <el-button type="text" @click="handleUpdate2(scope.row)">编辑</el-button>
+          <div class="el-divider"></div>
+          <el-button type="text" @click="handleDelete2(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination @size-change="pageSizeChange2" @current-change="pageCurrentChange2" :current-page="pagePage2" :page-size="pageRows2" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals2" v-if="pageTotals2>0" :style="{'margin':'10px 0 0','text-align':'right'}">
+    </el-pagination>
 
-        <el-dialog title="自适应方案编辑" :visible.sync="dialogVisible1" width="560px" :close-on-click-modal="false">
-            <el-form :model="formData1" ref="form1" label-width="100px">
-                <el-form-item label="统计时间间隔">
-                    <el-input-number v-model.number="formData1.statistic_minutes" :min="0"></el-input-number>
-                </el-form-item>
-                <el-form-item label="触发时间间隔">
-                    <el-input-number v-model.number="formData1.do_minutes" :min="0"></el-input-number>
-                </el-form-item>
-                <el-form-item label="触发流量总数">
-                    <el-input-number v-model.number="formData1.flow_total" :min="0"></el-input-number>
-                </el-form-item>
-                <el-form-item label="东西向车道号">
-                    <el-select placeholder="请选择" v-model="formData1.lane_east_west" multiple :style="{width: '100%'}">
-                        <el-option v-for="item in 16" :key="item" :value="''+item" :label="'车道'+item"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="南北向车道号">
-                    <el-select placeholder="请选择" v-model="formData1.lane_south_north" multiple :style="{width: '100%'}">
-                        <el-option v-for="item in 16" :key="item" :value="''+item" :label="'车道'+item"></el-option>
-                    </el-select>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" >
-                <el-button @click="handleFormCancel1">取 消</el-button>
-                <el-button type="primary" @click="handleFormSubmit1" :loading="dialogLoading1">确 定</el-button>
-            </span>
-        </el-dialog>
+    <el-dialog title="自适应方案编辑" :visible.sync="dialogVisible1" width="560px" :close-on-click-modal="false" :show-close="false">
+      <el-form :model="formData1" ref="form1" label-width="100px">
+        <el-form-item label="统计时间间隔">
+          <el-input-number v-model.number="formData1.statistic_minutes" :min="0"></el-input-number>
+        </el-form-item>
+        <el-form-item label="触发时间间隔">
+          <el-input-number v-model.number="formData1.do_minutes" :min="0"></el-input-number>
+        </el-form-item>
+        <el-form-item label="触发流量总数">
+          <el-input-number v-model.number="formData1.flow_total" :min="0"></el-input-number>
+        </el-form-item>
+        <el-form-item label="东西向车道号">
+          <el-select placeholder="请选择" v-model="formData1.lane_east_west" multiple :style="{width: '100%'}">
+            <el-option v-for="item in 16" :key="item" :value="''+item" :label="'车道'+item"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="南北向车道号">
+          <el-select placeholder="请选择" v-model="formData1.lane_south_north" multiple :style="{width: '100%'}">
+            <el-option v-for="item in 16" :key="item" :value="''+item" :label="'车道'+item"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="handleFormCancel1">取 消</el-button>
+        <el-button type="primary" @click="handleFormSubmit1" :loading="dialogLoading1">确 定</el-button>
+      </span>
+    </el-dialog>
 
-        <el-dialog :title="dialogTitle2" :visible.sync="dialogVisible2" width="560px" :close-on-click-modal="false">
-            <el-form :model="formData2" ref="form2" label-width="100px">
-                <el-form-item label="东西车流量">
-                    <el-input-number v-model.number="formData2.proportion_east_west" :min="0"></el-input-number>
-                </el-form-item>
-                <el-form-item label="南北车流量">
-                    <el-input-number v-model.number="formData2.proportion_south_north" :min="0"></el-input-number>
-                </el-form-item>
-                <el-form-item label="南北车流量">
-                    <el-select placeholder="请选择" v-model="formData2.pattern_id">
-                        <el-option v-for="(item,index) in planData" :key="index" :value="''+index" :label="'方案'+(index+1)"></el-option>
-                    </el-select>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" >
-                <el-button @click="handleFormCancel2">取 消</el-button>
-                <el-button type="primary" @click="handleFormSubmit2" :loading="dialogLoading2">确 定</el-button>
-            </span>
-        </el-dialog>
-    </div>
+    <el-dialog :title="dialogTitle2" :visible.sync="dialogVisible2" width="560px" :close-on-click-modal="false" :show-close="false">
+      <el-form :model="formData2" ref="form2" label-width="100px">
+        <el-form-item label="东西车流量">
+          <el-input-number v-model.number="formData2.proportion_east_west" :min="0"></el-input-number>
+        </el-form-item>
+        <el-form-item label="南北车流量">
+          <el-input-number v-model.number="formData2.proportion_south_north" :min="0"></el-input-number>
+        </el-form-item>
+        <el-form-item label="南北车流量">
+          <el-select placeholder="请选择" v-model="formData2.pattern_id">
+            <el-option v-for="(item,index) in planData" :key="index" :value="''+index" :label="'方案'+(index+1)"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="handleFormCancel2">取 消</el-button>
+        <el-button type="primary" @click="handleFormSubmit2" :loading="dialogLoading2">确 定</el-button>
+      </span>
+    </el-dialog>
+  </div>
 </template>
 
 <script>

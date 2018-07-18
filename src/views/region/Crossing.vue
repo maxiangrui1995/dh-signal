@@ -27,12 +27,12 @@
                 <img :src="require('@/assets/crossing.jpg')" alt="" style="width:100%;display:block">
                 <div class="box-image-cover">
                   <div class="box-image-cover-wrapper">
-                    <el-tooltip class="button" content="重新上传图片">
+                   <!--  <el-tooltip class="button" content="重新上传图片">
                       <el-button type="text">
                         <i class="el-icon-upload"></i>
                       </el-button>
-                    </el-tooltip>
-                   <!--  <el-tooltip class="button" content="查看大图">
+                    </el-tooltip> -->
+                    <!--  <el-tooltip class="button" content="查看大图">
                       <el-button type="text" @click="handleViewImage(item)">
                         <i class="el-icon-view"></i>
                       </el-button>
@@ -59,7 +59,7 @@
                 </div> -->
                 <div class="box-content-inner">
                   <span class="item">{{formatterLatLng(item.lat)}} , {{formatterLatLng(item.lng)}}</span>
-                  <el-tooltip class="button" content="地图">
+                  <el-tooltip class="button" content="取点">
                     <el-button type="text" @click="handleViewInMap(item)">
                       <i class="el-icon-location"></i>
                     </el-button>

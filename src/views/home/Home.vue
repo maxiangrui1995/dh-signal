@@ -9,11 +9,18 @@
       <div class="layout-header-tools">
         <el-tooltip class="layout-header-tools-btn-con" :content="hasNewMsg?'有最新消息':'暂无消息'">
           <el-badge is-dot class="item" :hidden="!hasNewMsg">
-            <i class="fa fa-bell"></i>
+            <!-- <i class="fa fa-bell"></i> -->
+            <el-popover placement="bottom-end" width="336">
+              <el-tabs v-model="activeName">
+                <el-tab-pane label="信号机" name="1">信号机</el-tab-pane>
+                <el-tab-pane label="备用电源" name="2">备用电源</el-tab-pane>
+              </el-tabs>
+              <i class="fa fa-bell" slot="reference"></i>
+            </el-popover>
           </el-badge>
         </el-tooltip>
         <el-tooltip class="layout-header-tools-btn-con" content="用户设置">
-          <i class="fa fa-cog"></i>
+          <i class="fa fa-cog" @click="handleSetting"></i>
         </el-tooltip>
         <el-tooltip class="layout-header-tools-btn-con" content="退出系统">
           <i class="fa fa-sign-out" @click="handleLogout"></i>
@@ -70,13 +77,19 @@ export default {
           title: "绿波带",
           icon: "fa-flag"
         },
-        {
+        /* {
           name: "privilege",
           title: "特勤联动",
           icon: "fa-filter"
+        } */
+        {
+          name: "userManage",
+          title: "用户管理",
+          icon: "fa-group"
         }
       ],
-      menuDefaultActive: `/${this.$route.path.split("/")[1]}`
+      menuDefaultActive: `/${this.$route.path.split("/")[1]}`,
+      activeName: "1"
     };
   },
   methods: {
@@ -117,6 +130,11 @@ export default {
       })
         .then(() => {})
         .catch(() => {});
+    },
+    handleSetting() {
+      this.$router.push({
+        path: "/userSetting"
+      });
     }
   }
 };

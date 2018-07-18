@@ -21,8 +21,10 @@
           <el-dropdown-item>车流量视频</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown> -->
-      <el-button type="primary">车流量</el-button>
+      <!-- <el-button type="primary">车流量</el-button>
+      <el-button type="primary">设备</el-button> -->
     </div>
+
   </div>
 </template>
 
@@ -86,22 +88,28 @@ export default {
     showMarker(dev) {
       let marker = this.crossingMarkers[this.id];
       let row = marker.data;
-      let machine = dev.machine ? dev.machine : "";
-      let ups = dev.ups ? dev.ups : "";
+      let machine = dev.machine ? [dev.machine] : "";
+      let ups = dev.ups ? [dev.ups] : "";
       let ipc = dev.ipc ? dev.ipc : [];
       let camera = dev.camera ? dev.camera : [];
       let img = require("@/assets/crossing.jpg");
 
       let html = `<div class="overlayview">
               <div class="overlayview-title">
-                <div style="margin-bottom:10px;font-size:1.168em;">${
-                  row.name
-                }</div>
+                <div style="font-size: 18px; margin: 12px 0;">${row.name}</div>
                 <div style="color:#606266;">
-                  <div style="display:inline-block;margin-right:8px;"><span>1</span><br>信号机</div>
-                  <div style="display:inline-block;margin-right:8px;"><span>1</span><br>备用电源</div>
-                  <div style="display:inline-block;margin-right:8px;"><span>3</span><br>相机</div>
-                  <div style="display:inline-block;"><span>4</span><br>车检器</div>
+                  <div style="display:inline-block;margin-right:8px;">
+                    <span>${machine.length || 0}台</span>
+                    <br>信号机</div>
+                  <div style="display:inline-block;margin-right:8px;">
+                    <span>${ups.length || 0}台</span>
+                    <br>备用电源</div>
+                  <div style="display:inline-block;margin-right:8px;">
+                    <span>${camera.length || 0}台</span>
+                    <br>相机</div>
+                  <div style="display:inline-block;">
+                    <span>${ipc.length || 0}台</span>
+                    <br>车检器</div>
                 </div>
               </div>
               <div class="overlayview-body">
@@ -139,5 +147,5 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 </style>

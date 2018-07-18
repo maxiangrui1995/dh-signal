@@ -22,7 +22,7 @@
               <el-table :data="signalData" :show-header="false" style="width: 100%">
                 <el-table-column prop="ip" label="ip">
                 </el-table-column>
-                <el-table-column label="操作" align="center" width="180">
+                <el-table-column label="操作" align="right" width="180">
                   <template slot-scope="scope">
                     <el-button type="text" @click="handleUpdate_signal_ups(scope.row, 'signal')">编辑</el-button>
                     <div class="el-divider"></div>
@@ -41,7 +41,7 @@
               <el-table :data="upsData" :show-header="false" style="width: 100%">
                 <el-table-column prop="ip" label="ip">
                 </el-table-column>
-                <el-table-column label="操作" align="center" width="180">
+                <el-table-column label="操作" align="right" width="180">
                   <template slot-scope="scope">
                     <el-button type="text" @click="handleUpdate_signal_ups(scope.row, 'ups')">编辑</el-button>
                     <div class="el-divider"></div>
@@ -71,7 +71,7 @@
                 </el-table-column>
                 <el-table-column prop="password" label="password">
                 </el-table-column>
-                <el-table-column label="操作" align="center" width="180">
+                <el-table-column label="操作" align="right" width="180">
                   <template slot-scope="scope">
                     <el-button type="text" @click="handleUpdateCamera(scope.row)">编辑</el-button>
                     <div class="el-divider"></div>
@@ -92,7 +92,7 @@
                 </el-table-column>
                 <el-table-column prop="name" label="name">
                 </el-table-column>
-                <el-table-column label="操作" align="center" width="180">
+                <el-table-column label="操作" align="right" width="180">
                   <template slot-scope="scope">
                     <el-button type="text" @click="handleUpdateIpc(scope.row)">编辑</el-button>
                     <div class="el-divider"></div>
@@ -106,7 +106,7 @@
       </el-main>
     </el-container>
 
-    <el-dialog :title="dialogCameraTitle" :visible.sync="dialogCameraVisible" width="30%" :close-on-click-modal="false">
+    <el-dialog :title="dialogCameraTitle" :visible.sync="dialogCameraVisible" width="30%" :close-on-click-modal="false" :show-close="false">
       <el-form :model="cameraFormData" :rules="cameraFormRules" ref="cameraForm" label-width="60px">
         <el-form-item label="相机IP" prop="ip">
           <el-input v-model="cameraFormData.ip"></el-input>
@@ -124,9 +124,24 @@
           <el-input v-model="cameraFormData.password"></el-input>
         </el-form-item>
       </el-form>
-      <span slot="footer" >
+      <span slot="footer">
         <el-button @click="dialogCameraVisible = false">取 消</el-button>
-        <el-button type="primary" @click="handleCameraSubmit">确 定</el-button>
+        <el-button type="primary" @click="handleCameraSubmit" :loading="dialogCameraLoading">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog :title="dialogIpcTitle" :visible.sync="dialogIpcVisible" width="30%" :close-on-click-modal="false" :show-close="false">
+      <el-form :model="ipcFormData" :rules="ipcFormRules" ref="ipcForm" label-width="90px">
+        <el-form-item label="车检器IP" prop="ip">
+          <el-input v-model="ipcFormData.ip"></el-input>
+        </el-form-item>
+        <el-form-item label="车检器别名" prop="name">
+          <el-input v-model="ipcFormData.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="dialogIpcVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleIpcSubmit" :loading="dialogIpcLoading">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -154,8 +169,48 @@ export default {
       ipReg: /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/,
       dialogCameraTitle: "",
       dialogCameraVisible: false,
+      dialogCameraLoading: false,
       cameraFormData: {},
-      cameraFormRules: {}
+      cameraFormRules: {
+        ip: [
+          {
+            validator: (rule, value, callback) => {
+              let reg = this.ipReg;
+              if (!value) {
+                callback(new Error("请输入ip"));
+              } else {
+                if (!reg.test(value)) {
+                  callback(new Error("请输入正确ip"));
+                } else {
+                  callback();
+                }
+              }
+            }
+          }
+        ]
+      },
+      dialogIpcTitle: "",
+      dialogIpcVisible: false,
+      dialogIpcLoading: false,
+      ipcFormData: {},
+      ipcFormRules: {
+        ip: [
+          {
+            validator: (rule, value, callback) => {
+              let reg = this.ipReg;
+              if (!value) {
+                callback(new Error("请输入ip"));
+              } else {
+                if (!reg.test(value)) {
+                  callback(new Error("请输入正确ip"));
+                } else {
+                  callback();
+                }
+              }
+            }
+          }
+        ]
+      }
     };
   },
   methods: {
@@ -325,15 +380,154 @@ export default {
         username: "",
         password: ""
       };
+      if (this.$refs["cameraForm"]) {
+        this.$refs["cameraForm"].resetFields();
+      }
     },
-    handleUpdateCamera() {},
+    handleUpdateCamera(row) {
+      this.dialogCameraVisible = true;
+      this.dialogCameraTitle = "相机编辑";
+      this.cameraFormData = Object.assign({}, row);
+    },
     handleCameraSubmit() {
-      console.log(this.cameraFormData);
+      let url = "";
+      this.dialogCameraLoading = true;
+      let data = {};
+      if (this.dialogCameraTitle == "相机编辑") {
+        url = "flow_check/f_camera/dataUpdate";
+        data = this.cameraFormData;
+        delete data.video_url;
+      } else {
+        url = "flow_check/f_camera/dataAdd";
+        data = Object.assign(this.cameraFormData, {
+          crossing_id: this.id3,
+          port: 2555,
+          manufacturer: 0
+        });
+      }
+      this.$http(url, data).then(res => {
+        if (res.status) {
+          this.getDvesData();
+        }
+        this.$message({
+          type: res.status ? "success" : "error",
+          message: res.message
+        });
+        this.dialogCameraLoading = false;
+        this.dialogCameraVisible = false;
+      });
     },
-    handleDeleteCamera() {},
-    handleCreateIpc() {},
-    handleUpdateIpc() {},
-    handleDeleteIpc() {}
+    handleDeleteCamera(row) {
+      this.$msgbox({
+        title: "提示",
+        message: "此操作将解绑该设备, 是否继续?",
+        showCancelButton: true,
+        type: "warning",
+        confirmButtonText: "解绑",
+        cancelButtonText: "放弃",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "解绑中...";
+            // ajax
+            this.$http("flow_check/f_camera/dataDelete", {
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                this.getDvesData();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(action => {})
+        .catch(action => {});
+    },
+    handleCreateIpc() {
+      this.dialogIpcVisible = true;
+      this.dialogIpcTitle = "车检器新增";
+      this.ipcFormData = {
+        ip: "",
+        name: ""
+      };
+      if (this.$refs["cameraIpc"]) {
+        this.$refs["cameraIpc"].resetFields();
+      }
+    },
+    handleUpdateIpc(row) {
+      this.dialogIpcVisible = true;
+      this.dialogIpcTitle = "车检器编辑";
+      this.ipcFormData = Object.assign({}, row);
+    },
+    handleDeleteIpc(row) {
+      this.$msgbox({
+        title: "提示",
+        message: "此操作将解绑该设备, 是否继续?",
+        showCancelButton: true,
+        type: "warning",
+        confirmButtonText: "解绑",
+        cancelButtonText: "放弃",
+        beforeClose: (action, instance, done) => {
+          if (action === "confirm") {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = "解绑中...";
+            // ajax
+            this.$http("flow_check/f_ipc/dataDelete", {
+              id: row.id
+            }).then(res => {
+              if (res.status) {
+                this.getDvesData();
+              }
+              this.$message({
+                type: res.status ? "success" : "error",
+                message: res.message
+              });
+              done();
+              instance.confirmButtonLoading = false;
+            });
+          } else {
+            instance.confirmButtonLoading = false;
+            done();
+          }
+        }
+      })
+        .then(action => {})
+        .catch(action => {});
+    },
+    handleIpcSubmit() {
+      let url = "";
+      this.dialogIpcLoading = true;
+      let data = {};
+      if (this.dialogIpcTitle == "车检器编辑") {
+        url = "flow_check/f_ipc/dataUpdate";
+        data = this.ipcFormData;
+      } else {
+        url = "flow_check/f_ipc/dataAdd";
+        data = Object.assign(this.ipcFormData, {
+          crossing_id: this.id3
+        });
+      }
+      this.$http(url, data).then(res => {
+        if (res.status) {
+          this.getDvesData();
+        }
+        this.$message({
+          type: res.status ? "success" : "error",
+          message: res.message
+        });
+        this.dialogIpcLoading = false;
+        this.dialogIpcVisible = false;
+      });
+    }
   },
   created() {
     this.getDvesData();

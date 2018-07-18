@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import APP from "@/libs/canvas_signal";
+import APP from "@/libs/view";
 export default {
   methods: {
     open() {

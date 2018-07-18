@@ -8,6 +8,10 @@ $layout-header-color:linear-gradient(to right, #648dba 10%, #5f95c5 10%, #6196c4
     background: $layout-header-color;
     color: #fff;
   }
+  /*  */
+  .el-scrollbar__thumb {
+    background: rgba(255, 255, 255, 0.6)
+  }
   .el-menu {
     border-right: solid 1px transparent;
     background: linear-gradient(135deg, #266eb3, #4b9cd1);
@@ -45,6 +49,9 @@ $layout-header-color:linear-gradient(to right, #648dba 10%, #5f95c5 10%, #6196c4
     background: #115198;
     border-color: #115198;
     color: #f1f1f1;
+    .el-card {
+      border-color: #2963a3;
+    }
   }
   .el-card__header {
     border-bottom: 1px solid #2963a3;
@@ -125,12 +132,6 @@ $layout-header-color:linear-gradient(to right, #648dba 10%, #5f95c5 10%, #6196c4
         color: rgba($color: #f1f1f1, $alpha: 0.8)
       }
     }
-    .el-button--text {
-      color: #9bafc3;
-      &:hover {
-        color: #66b1ff;
-      }
-    }
   }
   /*  */
   .map-card {
@@ -179,5 +180,21 @@ $layout-header-color:linear-gradient(to right, #648dba 10%, #5f95c5 10%, #6196c4
   }
   .el-input-number__increase {
     border-left: 1px solid #4967af;
+  }
+  .el-dialog {
+    .el-input__inner {
+      background-color: #fff;
+      border: 1px solid #dcdfe6;
+      color: #606266;
+    }
+    .el-form-item__label {
+      color: #606266
+    }
+    .el-input-number__decrease,
+    .el-input-number__increase {
+      background: #f5f7fa;
+      color: #606266;
+      border-color: #dcdfe6;
+    }
   }
 }

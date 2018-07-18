@@ -55,7 +55,7 @@
       </el-main>
     </el-container>
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="520px" :close-on-click-modal="false">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="520px" :close-on-click-modal="false" :show-close="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="100px">
         <el-form-item label="绿波带名称" prop="name">
           <el-input clearable v-model="formData.name" placeholder="请输入名称" :style="{width: '100%'}"></el-input>

@@ -9,11 +9,12 @@
           <el-card shadow="never" :style="{'margin-bottom':'20px'}">
             <div slot="header">
               <span>{{cardTitle[item.type]}}</span>
+              <!-- 
               <el-tooltip content="通行权预览" :style="{float: 'right', padding: '5px 0'}">
                 <el-button type="text">
                   <i class="el-icon-view" style="font-size: 16px;"></i>
                 </el-button>
-              </el-tooltip>
+              </el-tooltip> -->
             </div>
             <el-row :gutter="10">
               <el-col :span="6" :offset="1">
@@ -48,7 +49,7 @@
         </el-col>
       </el-row>
       <el-button type="primary" :loading="loading" @click="handleSubmit">确定</el-button>
-      <el-button @click="handleReset">重置</el-button>
+      <el-button type="text" @click="handleReset">重置</el-button>
     </el-form>
   </div>
 </template>

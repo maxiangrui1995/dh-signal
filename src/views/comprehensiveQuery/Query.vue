@@ -3,33 +3,35 @@
     <el-header class="page-header" :style="{height: 'auto'}">
       <div class="box">
         <div class="box-inner">
-          <div class="box-inner-content">
+          <div class="box-inner-content" :class="{'open': collapse_1}">
             <div class="box-inner-content-label">区域:</div>
             <div class="box-inner-content-inner no-content" v-if="crossing_1.length==0">暂无数据</div>
             <div class="box-inner-content-inner" ref="crossing_box" v-else>
               <div class="box-inner-content-item" v-for="(item, index) in crossing_1" :key="index">
-                <span class="tag">{{item.name}}</span>
+                <span class="tag" :class="{'is-active': item.active}" @click="handleRegion1(item)">{{item.name}}</span>
               </div>
             </div>
-            <div class="box-inner-content-button">按钮</div>
+            <div class="box-inner-content-button" v-if="crossing_1.length>0" @click="collapse(1)">更多</div>
           </div>
-          <div class="box-inner-content">
+          <div class="box-inner-content" :class="{'open': collapse_2}">
             <div class="box-inner-content-label">道路:</div>
             <div class="box-inner-content-inner no-content" v-if="crossing_2.length==0">暂无数据</div>
             <div class="box-inner-content-inner" ref="crossing_box1" v-else>
               <div class="box-inner-content-item" v-for="(item, index) in crossing_2" :key="index">
-                <span class="tag">{{item.name}}</span>
+                <span class="tag" :class="{'is-active': item.active}" @click="handleRegion2(item)">{{item.name}}</span>
               </div>
             </div>
+            <div class="box-inner-content-button" v-if="crossing_2.length>0" @click="collapse(2)">更多</div>
           </div>
-          <div class="box-inner-content">
+          <div class="box-inner-content" :class="{'open': collapse_3}">
             <div class="box-inner-content-label">路口:</div>
             <div class="box-inner-content-inner no-content" v-if="crossing_3.length==0">暂无数据</div>
             <div class="box-inner-content-inner" ref="crossing_box2" v-else>
               <div class="box-inner-content-item" v-for="(item, index) in crossing_3" :key="index">
-                <span class="tag">{{item.name}}</span>
+                <span class="tag" :class="{'is-active': item.active}" @click="handleRegion3(item)">{{item.name}}</span>
               </div>
             </div>
+            <div class="box-inner-content-button" v-if="crossing_3.length>0" @click="collapse(3)">更多</div>
           </div>
         </div>
       </div>
@@ -61,7 +63,10 @@ export default {
       crossingData: [],
       crossing_1: [],
       crossing_2: [],
-      crossing_3: []
+      crossing_3: [],
+      collapse_1: true,
+      collapse_2: true,
+      collapse_3: true
     };
   },
   methods: {
@@ -74,13 +79,16 @@ export default {
         if (res.status === "1") {
           this.crossingData = data;
           data.forEach(item1 => {
+            this.$set(item1, "active", false);
             this.crossing_1.push(item1);
             if (item1.children) {
               item1.children.forEach(item2 => {
+                this.$set(item2, "active", false);
                 this.crossing_2.push(item2);
                 if (item2.children) {
                   item2.children.forEach(item3 => {
                     item3.name_ = [item1.name, item2.name, item3.name];
+                    this.$set(item3, "active", false);
                     this.crossing_3.push(item3);
                   });
                 }
@@ -100,13 +108,53 @@ export default {
 
         _w += w;
       });
-      console.log(_w, parseInt(width));
+      // console.log(_w, parseInt(width));
     },
     viewMore(row) {
       this.$router.push({
         path: "/comprehensiveQuery/" + row.id
       });
-    }
+    },
+    collapse(t) {
+      this["collapse_" + t] = !this["collapse_" + t];
+    },
+    handleRegion1(row) {
+      row.active = !row.active;
+      let arr2 = [];
+      let arr3 = [];
+      this.crossingData.forEach(item => {
+        if (!item.active && item.children) {
+          item.children.forEach(item => {
+            arr2.push(item);
+            if (item.children) {
+              item.children.forEach(item => {
+                arr3.push(item);
+              });
+            }
+          });
+        }
+      });
+
+      this.crossing_2 = arr2;
+      this.crossing_3 = arr3;
+    },
+    handleRegion2(row) {
+      row.active = !row.active;
+      let arr3 = [];
+      this.crossingData.forEach(item => {
+        if (item.children) {
+          item.children.forEach(item => {
+            if (!item.active && item.children) {
+              item.children.forEach(item => {
+                arr3.push(item);
+              });
+            }
+          });
+        }
+      });
+      this.crossing_3 = arr3;
+    },
+    handleRegion3(row) {}
   },
   watch: {},
   computed: {},
@@ -120,7 +168,7 @@ export default {
   },
   updated() {
     this.$nextTick(() => {
-      this.getWidth();
+      // this.getWidth();
       // console.log(this);
     });
   }
@@ -132,9 +180,13 @@ export default {
   font-size: 12px;
   padding: 10px 0;
   &-inner {
+    .open {
+      height: 40px;
+    }
     &-content {
       position: relative;
       min-height: 40px;
+      overflow: hidden;
       &-inner {
         margin: 0 50px;
         border-bottom: 1px dashed #ccc;
@@ -154,11 +206,13 @@ export default {
         right: 0;
         padding: 6px 4px;
         line-height: 24px;
+        cursor: pointer;
       }
       .no-content {
         height: 38px;
         line-height: 36px;
         color: #909399;
+        text-align: center;
       }
     }
     &-content:last-child > &-content-inner {
@@ -176,6 +230,11 @@ export default {
     box-sizing: border-box;
     border: 1px solid rgba(64, 158, 255, 0.2);
     white-space: nowrap;
+    cursor: pointer;
+  }
+  .tag.is-active {
+    background-color: transparent;
+    border-color: transparent;
   }
 }
 </style>

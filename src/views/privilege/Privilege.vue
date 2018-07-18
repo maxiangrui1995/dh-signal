@@ -6,6 +6,9 @@
           <el-breadcrumb separator="/">
             <el-breadcrumb-item>特勤联动</el-breadcrumb-item>
           </el-breadcrumb>
+          <div>
+            已激活
+          </div>
           <div style="float:right;">
             <el-button type="primary" icon="el-icon-plus" :style="{marginRight: '10px'}" @click="handleCreate">
               新增
@@ -32,15 +35,15 @@
             </el-table-column>
             <el-table-column prop="enabled" label="激活状态">
               <template slot-scope="scope">
-                <el-tooltip :content="scope.row.enabled==='1' ? '注销' : '激活'" placement="top">
-                  <el-switch v-model="scope.row.enabled" active-value="1" inactive-value="0" :style="{ margin: '1px' }">
-                  </el-switch>
-                </el-tooltip>
+                <span class="status" :class="[scope.row.enabled=='1'?'active':'']"></span>
+                <span>{{scope.row.enabled=='1' ? '已激活' : '未激活'}}</span>
               </template>
             </el-table-column>
             <el-table-column label="操作" align="center" width="180">
               <template slot-scope="scope">
                 <el-button type="text" @click="handleDetails(scope.row)">详情</el-button>
+                <div class="el-divider"></div>
+                <el-button type="text" @click="handleActive(scope.row)">{{scope.row.enabled=='1' ? '注销' : '激活'}}</el-button>
                 <div class="el-divider"></div>
                 <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
                 <div class="el-divider"></div>
@@ -54,7 +57,7 @@
       </el-main>
     </el-container>
 
-    <el-dialog title="特勤联动新增" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false">
+    <el-dialog title="特勤联动新增" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false" :show-close="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="100px">
         <el-form-item label="预案号" prop="sch_id">
           <el-input v-model="formData.sch_id" placeholder="请输入预案号"></el-input>
@@ -175,8 +178,10 @@ export default {
         rows: this.pageRows
       }).then(res => {
         let data = res.data;
+        console.log(data);
+
         if (res.status === "1") {
-          this.tableData = data.list;
+          this.tableData = data.list || [];
           this.pageTotals = ~~data.total;
         }
         this.loading = false;
@@ -202,6 +207,9 @@ export default {
     handleDelete(row) {
       console.log(row);
     },
+    handleActive(row) {
+      console.log(row);
+    },
     handleFormCancel() {},
     handleFormSubmit() {
       this.$refs["form"].validate(valid => {
@@ -215,5 +223,17 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.status {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  background: red;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+.status.active {
+  background: green;
+}
 </style>
+

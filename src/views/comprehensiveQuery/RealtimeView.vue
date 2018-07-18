@@ -1,36 +1,83 @@
 <template>
-	<div>
-		<el-container>
-			<el-header class="page-header">
-				<div class="page-header-inner">
-					<el-breadcrumb separator="/">
-						<el-breadcrumb-item>综合查询</el-breadcrumb-item>
-					</el-breadcrumb>
-				</div>
-			</el-header>
-			<el-main>
-				<el-card shadow="never">
-					<el-tabs v-model="activeName">
-						<el-tab-pane :label="'信号机'+signalIP" name="1">
-
-						</el-tab-pane>
-						<el-tab-pane :label="'备用电源'+upsIp" name="2">
-							<div ref="ups-chart-1" :style="{width: '800px', height: '600px'}"></div>
-						</el-tab-pane>
-					</el-tabs>
-				</el-card>
-			</el-main>
-		</el-container>
-	</div>
+  <div>
+    <el-container>
+      <el-header class="page-header">
+        <div class="page-header-inner">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/comprehensiveQuery/'+id }">综合查询</el-breadcrumb-item>
+            <el-breadcrumb-item>{{crossing_name}}</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
+      </el-header>
+      <el-main>
+        <el-card shadow="never">
+          <el-tabs v-model="activeName">
+            <el-tab-pane :label="'信号机 ('+machine_ip+')'" name="1">
+              <div class="tab-pane-wrapper">
+                <div class="tab-pane-inner view">
+                  <canvas ref="canvasview" width="800" height="640"></canvas>
+                </div>
+                <div class="tab-pane-inner form">
+                  <el-form :inline="true" :model="machine_form_data" :style="{marginLeft: '20px'}">
+                    <el-form-item label="系统时间">
+                      <el-input v-model="machine_form_data.time" :style="{width: '160px'}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="方案名称">
+                      <el-input v-model="machine_form_data.data_plan" :style="{width: '160px'}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="当前方案">
+                      <el-input v-model="machine_form_data.current_plan" :style="{width: '160px'}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="方案周期">
+                      <el-input v-model="machine_form_data.period" :style="{width: '160px'}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="控制状态">
+                      <el-input v-model="machine_form_data.control_func" :style="{width: '160px'}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="当前阶段">
+                      <el-input v-model="machine_form_data.current_step_num" :style="{width: '160px'}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="频率">
+                      <el-input v-model="machine_form_data.frequency" :style="{width: '60px'}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="温度">
+                      <el-input v-model="machine_form_data.temperature" :style="{width: '60px'}"></el-input>
+                    </el-form-item>
+                    <el-form-item label="电压">
+                      <el-input v-model="machine_form_data.voltage" :style="{width: '60px'}"></el-input>
+                    </el-form-item>
+                  </el-form>
+                </div>
+              </div>
+            </el-tab-pane>
+            <el-tab-pane :label="'备用电源 ('+ups_ip+')'" name="2">
+              <div ref="ups-chart-1" :style="{width: '800px', height: '600px'}"></div>
+            </el-tab-pane>
+          </el-tabs>
+        </el-card>
+      </el-main>
+    </el-container>
+  </div>
 </template>
 
 <script>
+import VIEW from "@/libs/view";
 export default {
   data() {
     return {
       activeName: "1",
-      signalIP: "(192.168.0.8)",
-      upsIp: "(192.168.0.1)"
+      id: this.$route.params.id,
+      wsUrl: "", //websocket地址
+      websocket: null,
+      crossing_name: "路口",
+      machine_ip: "暂无",
+      ups_ip: "暂无",
+      machine_form_data: {
+        time: "2018/07/18 13:32:30",
+        data_plan: "方案一"
+      }, //信号机实时数据
+      machine_data: {},
+      fun: null
     };
   },
   mounted() {
@@ -191,16 +238,165 @@ export default {
         ]
       };
       myChart.setOption(option);
+    },
+    // 获取路口信息
+    getCrossing() {
+      this.$http("index/d_crossing/dataView", {
+        id: this.id
+      }).then(res => {
+        let data = res.data;
+        if (res.status === "1") {
+          this.crossing_name = data.crossing.name;
+          this.machine_ip = data.machine.ip;
+          this.machine_id = data.machine.id;
+          this.ups_ip = data.ups.ip;
+
+          this.getLight(data.machine.id);
+        }
+      });
+    },
+    // 获取灯组信息
+    getLight(machine_id) {
+      this.$http("index/d_machine_control/getMachinePlan", {
+        machine_id: machine_id
+      }).then(res => {
+        if (res.status) {
+          let draw = this.fun;
+          this.machine_data = res.data;
+          let LIGHTDATA = res.data.data_phaseinfo;
+          draw.LIGHTDATA = LIGHTDATA;
+          draw.draw();
+        }
+      });
+    },
+    // 连接websocket
+    connectWebSocket() {
+      // 第一步：获得地址
+      this.$http("index/d_machine_control/getVar")
+        .then(res => {
+          if (res.status) {
+            let data = res.data;
+            let { web_socket_host, web_socket_port } = data;
+            this.wsUrl = `ws://${web_socket_host}:${web_socket_port}`;
+          } else {
+            this.$message.error("信号机实时数据地址请求失败!");
+          }
+        })
+        .then(() => {
+          let wsUrl = this.wsUrl;
+          if (!wsUrl) return;
+          let w = (this.websocket = new WebSocket(wsUrl));
+          let self = this;
+          w.onopen = function() {
+            self.$message.info("websocket开始连接");
+            w.send(self.id);
+          };
+          w.onmessage = function(evt) {
+            let data = JSON.parse(evt.data);
+            if (data.status) {
+              self.getWebSockeMessage(data);
+            }
+          };
+          w.onerror = function() {
+            self.$message.info("websocket连接失败");
+            throw "websocket连接失败";
+          };
+          w.onclose = function() {
+            self.$message.info("websocket连接断开");
+            w.close();
+          };
+        });
+    },
+    // 实时接收websocket消息
+    getWebSockeMessage(data) {
+      let machine = data.data.machine;
+      let ups = data.data.ups;
+      let draw = this.fun;
+      draw.PHASEDATA = machine.status;
+
+      let machine_data = this.machine_data;
+      if (Object.keys(machine_data).length > 0) {
+        // 计算倒计时
+        let current_plan = this.machine_data.data_pattern[machine.current_plan];
+        let time_interval = ~~this.machine_data.data_passage[0].time_interval;
+        if (machine.current_step_num == 160) {
+          draw.COUNT = time_interval - machine.current_phase_time;
+        } else if (machine.current_phase_time > 16) {
+        } else {
+          draw.COUNT =
+            ~~current_plan["time" + machine.current_step_num] +
+            time_interval -
+            machine.current_phase_time;
+        }
+      }
+
+      draw.draw();
+    },
+    // canvas绘制信号机
+    drawSignalView() {
+      let draw = this.fun;
+      draw.init(this.$refs.canvasview);
+      // 路口数据 TODO
+      draw.CROSSINGDATA = [
+        {
+          direction: "1",
+          roadnum: "3",
+          target: ["3", "2", "4"]
+        },
+        {
+          direction: "3",
+          roadnum: "3",
+          target: ["3", "2", "4"]
+        },
+        {
+          direction: "5",
+          roadnum: "3",
+          target: ["3", "2", "4"]
+        },
+        {
+          direction: "7",
+          roadnum: "3",
+          target: ["3", "2", "4"]
+        }
+      ];
+      draw.draw();
+    }
+  },
+  created() {
+    this.$nextTick(() => {
+      this.fun = new VIEW();
+      this.drawSignalView();
+      this.getCrossing();
+      this.connectWebSocket();
+    });
+  },
+  beforeDestroy() {
+    // 销毁websocket
+    if (this.websocket) {
+      this.websocket.onclose();
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.ups-inner {
-  width: 300px;
-  height: 240px;
-  display: inline-block;
+.tab-pane {
+  &-wrapper {
+    width: 100%;
+    overflow-y: auto;
+    .view {
+      width: 800px;
+    }
+    .form {
+      width: calc(100% - 800px);
+    }
+  }
+  &-inner {
+    display: inline-block;
+    vertical-align: top;
+  }
+}
+canvas {
   vertical-align: top;
 }
 </style>

@@ -10,7 +10,7 @@ import 'font-awesome/css/font-awesome.min.css'
 import './styles/common.scss'
 import './styles/theme.scss'
 
-import './mock/index'
+// import './mock/index'
 
 Vue.config.productionTip = false
 

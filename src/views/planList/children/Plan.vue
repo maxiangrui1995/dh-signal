@@ -42,7 +42,7 @@
     <el-pagination @size-change="pageSizeChange" @current-change="pageCurrentChange" :current-page="pagePage" :page-size="pageRows" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals" v-if="pageTotals>0" :style="{'margin':'10px 0 0','text-align':'right'}">
     </el-pagination>
 
-    <el-dialog title="方案编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false">
+    <el-dialog title="方案编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false" :show-close="false">
       <el-form :model="formData" :inline="true" :rules="rules" ref="form">
         <div v-for="index in ~~formData.step" :key="index">
           <el-form-item label="步号" :style="{marginRight: '20px'}">
@@ -63,7 +63,7 @@
         </div>
       </el-form>
       <el-button plain size="medium" @click="handleItemCreate()" :style="{width: '100%'}">新 增</el-button>
-      <span slot="footer" >
+      <span slot="footer">
         <el-button @click="handleFormCancel">取 消</el-button>
         <el-button type="primary" @click="handleFormSubmit" :loading="dialogLoading">确 定</el-button>
       </span>

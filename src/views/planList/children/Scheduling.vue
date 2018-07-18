@@ -43,7 +43,7 @@
     <el-pagination @size-change="pageSizeChange" @current-change="pageCurrentChange" :current-page="pagePage" :page-size="pageRows" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals" v-if="pageTotals>0" :style="{'margin':'10px 0 0','text-align':'right'}">
     </el-pagination>
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="480px" :close-on-click-modal="false">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="480px" :close-on-click-modal="false" :show-close="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="80px">
         <el-form-item label="日期类型" prop="datetype">
           <el-select placeholder="请选择" v-model="formData.datetype" @change="datetypeChange" :style="{width: '100%'}">
@@ -76,7 +76,7 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <span slot="footer" >
+      <span slot="footer">
         <el-button @click="handleFormCancel">取 消</el-button>
         <el-button type="primary" @click="handleFormSubmit" :loading="dialogLoading">确 定</el-button>
       </span>

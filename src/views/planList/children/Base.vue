@@ -45,7 +45,7 @@
           </div>
           <el-form-item label=" ">
             <el-button type="primary" :loading="loading" @click="handleSubmit">确定</el-button>
-            <el-button @click="handleReset">重置</el-button>
+            <el-button type="text" @click="handleReset">重置</el-button>
           </el-form-item>
         </el-form>
       </el-col>
@@ -71,7 +71,7 @@ export default {
         extends_up: 0
       },
       rules: {
-        name: [{ required: true, message: "名称不能为空" }]
+        /* name: [{ message: "名称不能为空" }] */
       },
       loading: false
     };
