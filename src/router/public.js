@@ -86,7 +86,7 @@ const planList = [{
     path: '/planList/:id/phase',
     name: 'planList-detail-相位',
     meta: {
-      title: "特征参数-phase"
+      title: "特征参数-相位"
     },
     component: resolve => require(['@/views/planList/children/Phase'], resolve)
   },
@@ -142,7 +142,7 @@ const greenBelt = [{
   },
   component: resolve => require(['@/views/greenBelt/GreenBelt'], resolve)
 }, {
-  path: '/greenBelt/:id',
+  path: '/greenBelt/:id/:name/:period',
   name: 'greenBelt-details',
   meta: {
     title: "绿波带"

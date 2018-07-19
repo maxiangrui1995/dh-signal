@@ -173,7 +173,7 @@ export default {
     },
     handleDetails(row) {
       this.$router.push({
-        path: "/greenBelt/" + row.id
+        path: "/greenBelt/" + row.id + "/" + row.name + "/" + row.period
       });
     },
     handleUpdate(row) {

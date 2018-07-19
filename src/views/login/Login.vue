@@ -60,7 +60,7 @@ export default {
             });
           }, 600);
         } else {
-          this.$Message.error(res.message);
+          this.$message.error(res.message);
           this.btnLoading = false;
           this.btnInnerHtml = "登录";
         }

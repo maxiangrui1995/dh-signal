@@ -110,6 +110,10 @@ input:-webkit-autofill {
   }
 }
 
+.el-input-number.is-controls-right .el-input__inner {
+  text-align: left;
+}
+
 .page-header {
   border-bottom: 1px solid #e8e8e8;
   background: #ffffff;
@@ -203,4 +207,10 @@ input:-webkit-autofill {
   background-color: #fff;
   color: #303133;
   transition: .3s;
+}
+
+.not-content {
+  text-align: center;
+  font-size: 12px;
+  color: #d5dce8;
 }

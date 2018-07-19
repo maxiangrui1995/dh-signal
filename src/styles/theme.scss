@@ -197,4 +197,28 @@ $layout-header-color:linear-gradient(to right, #648dba 10%, #5f95c5 10%, #6196c4
       border-color: #dcdfe6;
     }
   }
+  /*  */
+  .el-radio.is-bordered {
+    border: 1px solid #2963a3;
+  }
+  .el-radio {
+    color: rgba(241, 241, 241, 0.6);
+  }
+  /*  */
+  .el-table__body tr.current-row>td {
+    background-color: #2963a3;
+  }
+  /*  */
+  .el-tabs--card>.el-tabs__header .el-tabs__nav {
+    border: 1px solid #2963a3;
+  }
+  .el-tabs--card>.el-tabs__header .el-tabs__item.is-active {
+    border-bottom-color: transparent;
+  }
+  .el-tabs--card>.el-tabs__header .el-tabs__item {
+    border-left: 1px solid #2963a3;
+  }
+  .el-tabs--card>.el-tabs__header {
+    border-bottom: 1px solid #2963a3;
+  }
 }

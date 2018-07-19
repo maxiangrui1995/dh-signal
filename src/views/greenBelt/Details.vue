@@ -37,7 +37,7 @@
               <template slot-scope="scope">
                 <el-button type="text" @click="handleDetails(scope.row)">详情</el-button>
                 <div class="el-divider"></div>
-                <el-button type="text" @click="handleDetails(scope.row)">下载</el-button>
+                <el-button type="text" @click="handleDownload(scope.row)">下载</el-button>
                 <div class="el-divider"></div>
                 <el-button type="text" @click="handleUpdate(scope.row)">编辑</el-button>
                 <div class="el-divider"></div>
@@ -45,8 +45,6 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination @size-change="pageSizeChange" @current-change="pageCurrentChange" :current-page="pagePage" :page-size="pageRows" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals" v-if="pageTotals>0" :style="{'margin':'10px 0 0','text-align':'right'}">
-          </el-pagination>
         </el-card>
       </el-main>
     </el-container>
@@ -54,27 +52,26 @@
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false" :show-close="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="100px">
         <el-form-item label="路口名称" prop="crossing_id">
-          <el-cascader :options="crossingData" v-model="formData.crossing_id" :disabled="formData.TYPE==='modify'" :style="{ width: '100%' }">
+          <el-cascader :options="crossingData" v-model="formData.crossing_id" :style="{ width: '100%' }">
           </el-cascader>
         </el-form-item>
         <el-form-item label="路段距离" prop="road_distance">
-          <el-input-number v-model="formData.road_distance" :min="0" :style="{ width: '100%' }"></el-input-number>
+          <el-input-number v-model="formData.road_distance" controls-position="right" :min="0" :style="{ width: '100%' }"></el-input-number>
         </el-form-item>
         <el-form-item label="限制速度" prop="forward_speed">
-          <el-input-number v-model="formData.forward_speed" :min="0" :max="255" :style="{ width: '100%' }"></el-input-number>
+          <el-input-number v-model="formData.forward_speed" controls-position="right" :min="0" :max="255" :style="{ width: '100%' }"></el-input-number>
         </el-form-item>
         <el-form-item label="路口相位差" prop="phase_difference">
-          <el-input-number v-model="formData.phase_difference" :min="0" :style="{ width: '100%' }"></el-input-number>
+          <el-input-number v-model="formData.phase_difference" controls-position="right" :min="0" :style="{ width: '100%' }"></el-input-number>
         </el-form-item>
         <el-form-item label="协调相位" prop="positive_phase">
           <el-select v-model="formData.positive_phase" placeholder="请选择" :style="{ width: '100%' }">
-            <el-option-group v-for="group in phase_group" :key="group.label" :label="group.label">
-              <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value">
-              </el-option>
-            </el-option-group>
+            <el-option v-for="(item,key) in phase" :key="key" :value="key" :label="item">
+            </el-option>
           </el-select>
         </el-form-item>
       </el-form>
+      <el-button @click="autoCommit" :style="{marginLeft: '100px'}">自动计算</el-button>
       <span slot="footer">
         <el-button @click="handleFormCancel">取 消</el-button>
         <el-button type="primary" @click="handleFormSubmit" :loading="dialogLoading">确 定</el-button>
@@ -88,9 +85,10 @@ export default {
   data() {
     return {
       id: this.$route.params.id,
-      name: "绿波带详情",
+      name: this.$route.params.name,
+      period: this.$route.params.period,
       pagePage: 1,
-      pageRows: 20,
+      pageRows: 999,
       pageTotals: 0,
       tableLoading: true,
       tableData: [],
@@ -112,92 +110,6 @@ export default {
         "14": "由北向南右转",
         "15": "由北向南行人"
       },
-      phase_group: [
-        {
-          label: "由东向西",
-          options: [
-            {
-              value: "0",
-              label: "左转"
-            },
-            {
-              value: "1",
-              label: "右转"
-            },
-            {
-              value: "2",
-              label: "直行"
-            },
-            {
-              value: "3",
-              label: "行人"
-            }
-          ]
-        },
-        {
-          label: "由南向北",
-          options: [
-            {
-              value: "4",
-              label: "左转"
-            },
-            {
-              value: "5",
-              label: "右转"
-            },
-            {
-              value: "6",
-              label: "直行"
-            },
-            {
-              value: "7",
-              label: "行人"
-            }
-          ]
-        },
-        {
-          label: "由西向东",
-          options: [
-            {
-              value: "8",
-              label: "左转"
-            },
-            {
-              value: "9",
-              label: "右转"
-            },
-            {
-              value: "10",
-              label: "直行"
-            },
-            {
-              value: "11",
-              label: "行人"
-            }
-          ]
-        },
-        {
-          label: "由北向南",
-          options: [
-            {
-              value: "12",
-              label: "左转"
-            },
-            {
-              value: "13",
-              label: "右转"
-            },
-            {
-              value: "14",
-              label: "直行"
-            },
-            {
-              value: "15",
-              label: "行人"
-            }
-          ]
-        }
-      ],
       dialogTitle: "",
       dialogVisible: false,
       dialogLoading: false,
@@ -244,9 +156,9 @@ export default {
       this.dialogTitle = "绿波带方案新增";
       this.formData = {
         crossing_id: [],
-        road_distance: "",
-        forward_speed: "",
-        phase_difference: "",
+        road_distance: "0",
+        forward_speed: "60",
+        phase_difference: "0",
         positive_phase: ""
       };
       if (this.$refs["form"]) {
@@ -316,11 +228,129 @@ export default {
         .then(action => {})
         .catch(action => {});
     },
+    handleDownload(row) {
+      this.$http("index/d_green_wave_sub/downLoadSetting", {
+        id: row.id
+      }).then(res => {
+        this.$message({
+          type: res.status ? "success" : "error",
+          message: res.message
+        });
+      });
+    },
+    handleDetails(row) {
+      this.$http("index/d_plan/dataView", {
+        id: row.plan_id
+      }).then(res => {
+        if (res.status) {
+          this.$router.push({
+            path: "/planList/" + res.data.id
+          });
+        } else {
+          this.$message.error("无详情");
+        }
+      });
+    },
     handleFormCancel() {
       this.dialogVisible = false;
       this.$refs["form"].resetFields();
     },
-    handleFormSubmit() {}
+    handleFormSubmit() {
+      if (this.formData.crossing_id.length != 3) {
+        return this.$message.error("未选择路口");
+      }
+      this.dialogLoading = true;
+      let crossing_id = this.formData.crossing_id[2];
+      let data = {
+        crossing_id: this.formData.crossing_id[2],
+        forward_speed: this.formData.forward_speed,
+        phase_difference: this.formData.phase_difference,
+        positive_phase: this.formData.positive_phase,
+        road_distance: this.formData.road_distance
+      };
+      let url = "";
+      if (this.dialogTitle == "绿波带方案新增") {
+        url = "index/d_green_wave_sub/dataAdd";
+        data.pid = this.id;
+      } else {
+        url = "index/d_green_wave_sub/dataUpdate";
+        data.id = this.formData.id;
+      }
+      this.$http(url, data).then(res => {
+        if (res.status) {
+          this.getDataList();
+        }
+        this.$message({
+          type: res.status ? "success" : "error",
+          message: res.message
+        });
+        this.dialogLoading = false;
+        this.dialogVisible = false;
+      });
+    },
+    // 自动计算
+    autoCommit() {
+      if (this.formData.crossing_id.length !== 3) {
+        return this.$message.error("未选择路口");
+      }
+      // 获取第一个路口
+      let first = {};
+      if (this.tableData.length == 0) {
+        first = this.formData.crossing_id[2];
+      } else {
+        first = this.tableData[0].crossing_id;
+      }
+      // 当前路口
+      let now = this.formData.crossing_id[2];
+      const fn = row => {
+        let d = null;
+        this.crossingData.forEach(item => {
+          if (item.children) {
+            item.children.forEach(item => {
+              if (item.children) {
+                item.children.forEach(item => {
+                  if (item.id == row) {
+                    d = item;
+                  }
+                });
+              }
+            });
+          }
+        });
+        return d;
+      };
+
+      let point1 = fn(first);
+      let point2 = fn(now);
+      // 计算距离
+      let distance = this.getDistance(
+        new google.maps.LatLng(point1.lat, point1.lng),
+        new google.maps.LatLng(point2.lat, point2.lng)
+      );
+      this.formData = Object.assign(this.formData, {
+        road_distance: distance,
+        phase_difference: (
+          (distance / (this.formData.forward_speed * 1000 / 3600)) %
+          this.period
+        ).toFixed(0)
+      });
+    },
+    getDistance(point1, point2) {
+      let R = 6378.14; // earth's mean radius in km
+      let lon1 = point1.lng() * Math.PI / 180;
+      let lat1 = point1.lat() * Math.PI / 180;
+      let lon2 = point2.lng() * Math.PI / 180;
+      let lat2 = point2.lat() * Math.PI / 180;
+
+      let deltaLat = lat1 - lat2;
+      let deltaLon = lon1 - lon2;
+
+      let step1 =
+        Math.pow(Math.sin(deltaLat / 2), 2) +
+        Math.cos(lat2) * Math.cos(lat1) * Math.pow(Math.sin(deltaLon / 2), 2);
+      let step2 = 2 * Math.atan2(Math.sqrt(step1), Math.sqrt(1 - step1));
+      return step2 * R;
+    }
   },
   created() {
     this.getCrossing();

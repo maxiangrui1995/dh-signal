@@ -37,9 +37,6 @@ export default {
       id: this.$route.params.id,
       crossing: [], //路口数据
       crossingMarkers: {},
-      crossingType: {
-        "1357": "普通十字路口"
-      },
       devs: {}
     };
   },
@@ -124,12 +121,18 @@ export default {
       // this.gmap.fitBounds(bounds);
       this.gmap.panTo(marker.getPosition());
     },
+    /* 实时监控 */
     handleView() {
       this.$router.push({
         path: "/comprehensiveQuery/" + this.id + "/view"
       });
     },
-    handleVideo() {}
+    /* 实时视频 */
+    handleVideo() {
+      this.$router.push({
+        path: "/comprehensiveQuery/" + this.id + "/video"
+      });
+    }
   },
   computed: {
     gmap() {

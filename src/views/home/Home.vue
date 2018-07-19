@@ -136,6 +136,11 @@ export default {
         path: "/userSetting"
       });
     }
+  },
+  watch: {
+    $route() {
+      this.menuDefaultActive = `/${this.$route.path.split("/")[1]}`;
+    }
   }
 };
 </script>

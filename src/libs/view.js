@@ -80,29 +80,29 @@ img_light[11]['default'] = new Image();
 img_light[11]['default'].src = light_foot;
 img_light[11]['1'] = new Image();
 img_light[11]['1'].src = light_foot_red;
-img_light[11]['6'] = img_light[4]['1'];
+img_light[11]['6'] = img_light[11]['1'];
 
 img_light[11]['2'] = new Image();
 img_light[11]['2'].src = light_foot_yellow;
-img_light[11]['7'] = img_light[4]['2'];
+img_light[11]['7'] = img_light[11]['2'];
 
 img_light[11]['3'] = new Image();
 img_light[11]['3'].src = light_foot_green;
-img_light[11]['8'] = img_light[4]['3'];
+img_light[11]['8'] = img_light[11]['3'];
 
 img_light['round']['default'] = new Image();
 img_light['round']['default'].src = light_round;
 img_light['round']['1'] = new Image();
 img_light['round']['1'].src = light_round_red;
-img_light['round']['6'] = img_light[11]['1'];
+img_light['round']['6'] = img_light['round']['1'];
 
 img_light['round']['2'] = new Image();
 img_light['round']['2'].src = light_round_yellow;
-img_light['round']['7'] = img_light[11]['2'];
+img_light['round']['7'] = img_light['round']['2'];
 
 img_light['round']['3'] = new Image();
 img_light['round']['3'].src = light_round_green;
-img_light['round']['8'] = img_light[11]['3'];
+img_light['round']['8'] = img_light['round']['3'];
 
 // 双黄线
 const YW = 4;
@@ -123,32 +123,26 @@ APP.prototype.CROSSINGDATA = [];
 APP.prototype.LIGHTDATA = [];
 // 阶段数据
 APP.prototype.PHASEDATA = [];
-/**
- * 
- * @param {* dom} selector canvas
- */
-APP.prototype.init = function (selector) {
-  selector.style.background = CC;
-
-  this.canvas = selector;
-  this.ctx = selector.getContext('2d')
-
-  this.ctx.translate(selector.width / 2, selector.height / 2);
-  this.engine();
+APP.prototype.init = function (elem) {
+  elem.style.background = CC;
+  this.selector = jQuery(elem);
+  this.selector.translateCanvas({
+    translateX: elem.width / 2, translateY: elem.height / 2
+  })
+}
+APP.prototype.clearCanvas = function () {
+  this.selector.clearCanvas().removeLayers();
 }
 APP.prototype.draw = function () {
-  let ctx = this.ctx;
-  let canvas = this.canvas;
-  let CW = canvas.width;
-  let CH = canvas.height;
+  this.clearCanvas();
+  let selector = this.selector;
+  let CW = selector.width();
+  let CH = selector.height();
   let CX = CW / 2;
   let CY = CH / 2;
 
   let CROSSINGDATA = this.CROSSINGDATA;
   let LIGHTDATA = this.LIGHTDATA;
-
-  canvas.height = CH;
-  ctx.translate(CX, CY);
 
   if (!CROSSINGDATA.length) {
     return console.error('没有路口信息');
@@ -175,214 +169,205 @@ APP.prototype.draw = function () {
 
   // 双黄线
   const drawYellow = () => {
-    ctx.save();
-    ctx.beginPath();
-    ctx.lineWidth = YW;
-    ctx.strokeStyle = YC;
+    let fn = (x1, y1, x2, y2) => {
+      selector.drawLine({
+        layer: true,
+        strokeStyle: YC,
+        strokeWidth: YW,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2
+      })
+    }
     // 1
-    ctx.moveTo(-4, o1);
-    ctx.lineTo(-4, -CY);
-    ctx.moveTo(4, o1);
-    ctx.lineTo(4, -CY);
-    ctx.closePath();
+    fn(-4, o1, -4, -CY);
+    fn(4, o1, 4, -CY);
     // 3
-    ctx.moveTo(o3, -4);
-    ctx.lineTo(CX, -4);
-    ctx.moveTo(o3, 4);
-    ctx.lineTo(CX, 4);
+    fn(o3, -4, CX, -4);
+    fn(o3, 4, CX, 4);
     // 5
-    ctx.moveTo(-4, o5);
-    ctx.lineTo(-4, CY);
-    ctx.moveTo(4, o5);
-    ctx.lineTo(4, CY);
+    fn(-4, o5, -4, CY);
+    fn(4, o5, 4, CY);
     // 7
-    ctx.moveTo(o7, -4);
-    ctx.lineTo(-CX, -4);
-    ctx.moveTo(o7, 4);
-    ctx.lineTo(-CX, 4);
-    ctx.closePath();
-    ctx.stroke();
-    ctx.restore();
-  };
+    fn(o7, -4, -CX, -4);
+    fn(o7, 4, -CX, 4);
+  }
+  drawYellow();
   // 绘制行车道
   const drawLane = () => {
-    ctx.save();
-    ctx.beginPath();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = LC;
+    let fn = (x1, y1, x2, y2) => {
+      selector.drawLine({
+        layer: true,
+        strokeStyle: LC,
+        strokeWidth: 2,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2
+      })
+    }
 
     let yw = YW * 1.5;
     // 1
     for (let i = 1; i < n1; i++) {
-      ctx.moveTo(-LW * i - yw, -CY);
-      ctx.lineTo(-LW * i - yw, o1 - 4);
+      fn(-LW * i - yw, -CY, -LW * i - yw, o1 - 4);
     }
-    ctx.moveTo(o7 + corner, o1 - 4);
-    ctx.lineTo(-yw, o1 - 4);
+    fn(o7 + corner, o1 - 4, -yw, o1 - 4);
     // 3
     for (let i = 1; i < n3; i++) {
-      ctx.moveTo(o3 + 4, -LW * i - yw);
-      ctx.lineTo(CX, -LW * i - yw);
+      fn(o3 + 4, -LW * i - yw, CX, -LW * i - yw);
     }
-    ctx.moveTo(o3 + 4, o1 + corner);
-    ctx.lineTo(o3 + 4, -yw);
+    fn(o3 + 4, o1 + corner, o3 + 4, -yw);
     // 5
     for (let i = 1; i < n5; i++) {
-      ctx.moveTo(LW * i + yw, CY);
-      ctx.lineTo(LW * i + yw, o5 + 4);
+      fn(LW * i + yw, CY, LW * i + yw, o5 + 4);
     }
-    ctx.moveTo(o3 - corner, o5 + 4);
-    ctx.lineTo(yw, o5 + 4);
+    fn(o3 - corner, o5 + 4, yw, o5 + 4);
     // 7
     for (let i = 1; i < n7; i++) {
-      ctx.moveTo(o7 - 4, LW * i + yw);
-      ctx.lineTo(-CX, LW * i + yw);
+      fn(o7 - 4, LW * i + yw, -CX, LW * i + yw);
     }
-    ctx.moveTo(o7 - 4, o5 - corner);
-    ctx.lineTo(o7 - 4, yw);
-
-    ctx.stroke();
-    ctx.closePath();
-    ctx.restore();
+    fn(o7 - 4, o5 - corner, o7 - 4, yw);
   };
+  drawLane();
   // 绘制虚线行车道
   const drawDashLane = () => {
-    ctx.save();
-    ctx.beginPath();
-    ctx.strokeStyle = LC;
-    ctx.setLineDash([10]);
-
+    let fn = (x1, y1, x2, y2) => {
+      selector.drawLine({
+        layer: true,
+        strokeStyle: LC,
+        strokeWidth: 1,
+        strokeDash: [5],
+        strokeDashOffset: 1,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2
+      })
+    }
     let yw = YW * 1.5;
     // 1
     for (let i = 1; i < n1; i++) {
-      ctx.moveTo(-LW * i - yw, o5);
-      ctx.lineTo(-LW * i - yw, CY);
+      fn(-LW * i - yw, o5, -LW * i - yw, CY);
     }
     // 3
     for (let i = 1; i < n3; i++) {
-      ctx.moveTo(o7, -LW * i - yw);
-      ctx.lineTo(-CX, -LW * i - yw);
+      fn(o7, -LW * i - yw, -CX, -LW * i - yw);
     }
     // 5
     for (let i = 1; i < n5; i++) {
-      ctx.moveTo(LW * i + yw, o1);
-      ctx.lineTo(LW * i + yw, -CY);
+      fn(LW * i + yw, o1, LW * i + yw, -CY);
     }
     // 7
     for (let i = 1; i < n7; i++) {
-      ctx.moveTo(o3, LW * i + yw);
-      ctx.lineTo(CX, LW * i + yw);
+      fn(o3, LW * i + yw, CX, LW * i + yw);
     }
 
-    ctx.stroke();
-    ctx.closePath();
-    ctx.restore();
   };
-  // 绘制车道类型
-  const drawLaneTarget = () => {
-    let draw = (x, y, p, t) => {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(Math.PI / 180 * p);
-      ctx.globalAlpha = 0.3;
-      ctx.drawImage(img_lane[t], 0, 0);
-      ctx.restore();
-    };
-    let yw = YW * 1.5;
-    // 1
-    for (let i = 0; i < n1; i++) {
-      let x = -yw - LW * i;
-      let y = o1 - 4;
-      draw(x, y, 180, target1[i]);
-    }
-    // 3
-    for (let i = 0; i < n3; i++) {
-      draw(o3 + 4, -yw - LW * i, 270, target3[i]);
-    }
-    // 5
-    for (let i = 0; i < n5; i++) {
-      draw(yw + LW * i, o5 + 4, 0, target5[i]);
-    }
-    // 7
-    for (let i = 0; i < n7; i++) {
-      draw(o7 - 4, yw + LW * i, 90, target7[i]);
-    }
-  };
+  drawDashLane();
   // 绘制人行道
   const drawRoadWay = () => {
-    ctx.save();
-    ctx.beginPath();
-    ctx.lineWidth = RW;
-    ctx.strokeStyle = RC;
-    ctx.setLineDash([4]);
-
+    let fn = (x1, y1, x2, y2) => {
+      selector.drawLine({
+        layer: true,
+        strokeStyle: RC,
+        strokeWidth: RW,
+        strokeDash: [5],
+        strokeDashOffset: 1,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2
+      })
+    }
     let rw = RW / 2;
     // 1
-    ctx.moveTo(o7 + corner, o1 + rw);
-    ctx.lineTo(o3 - corner, o1 + rw);
+    fn(o7 + corner, o1 + rw, o3 - corner, o1 + rw);
     // 3
-    ctx.moveTo(o3 - rw, o1 + corner);
-    ctx.lineTo(o3 - rw, o5 - corner);
+    fn(o3 - rw, o1 + corner, o3 - rw, o5 - corner);
     // 5
-    ctx.moveTo(o7 + corner, o5 - rw);
-    ctx.lineTo(o3 - corner, o5 - rw);
+    fn(o7 + corner, o5 - rw, o3 - corner, o5 - rw);
     // 7
-    ctx.moveTo(o7 + rw, o1 + corner);
-    ctx.lineTo(o7 + rw, o5 - corner);
-
-    ctx.stroke();
-    ctx.closePath();
-    ctx.restore();
+    fn(o7 + rw, o1 + corner, o7 + rw, o5 - corner);
   };
+  drawRoadWay();
   // 绘制围栏
   const drawWrapper = () => {
-    ctx.save();
-    ctx.beginPath();
-    ctx.strokeStyle = RC;
-    ctx.lineWidth = 4;
-
+    let line = (x1, y1, x2, y2) => {
+      selector.drawLine({
+        layer: true,
+        strokeStyle: RC,
+        strokeWidth: 4,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2
+      })
+    }
+    let arc = (x, y, radius, start, end) => {
+      selector.drawArc({
+        layer: true,
+        strokeStyle: RC,
+        strokeWidth: 4,
+        x: x, y: y,
+        radius: radius,
+        // start and end angles in degrees
+        start: start, end: end
+      })
+    }
     let lw = LW + 2;
     let rw = RW;
     // 1
-    ctx.moveTo(-lw * n1, -CY);
-    ctx.lineTo(-lw * n1, o1 + rw);
-    ctx.moveTo(lw * n5, -CY);
-    ctx.lineTo(lw * n5, o1 + rw);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(o3 - rw + 2, o1 + rw - 2, rw * 2, Math.PI * 0.5, Math.PI); //右上
+    line(-lw * n1, -CY, -lw * n1, o1 + rw);
+    line(lw * n5, -CY, lw * n5, o1 + rw);
+    arc(o3 - rw + 2, o1 + rw - 2, rw * 2, 180, 270);
     // 3
-    ctx.moveTo(o3 - rw, -lw * n3);
-    ctx.lineTo(CX, -lw * n3);
-    ctx.moveTo(o3 - rw, lw * n7);
-    ctx.lineTo(CX, lw * n7);
-    ctx.stroke();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.arc(o7 + rw - 2, o5 - rw + 2, rw * 2, Math.PI * 1.5, 0); //左下
+    line(o3 - rw, -lw * n3, CX, -lw * n3);
+    line(o3 - rw, lw * n7, CX, lw * n7);
+    arc(o7 + rw - 2, o5 - rw + 2, rw * 2, 0, 90);
     // 5
-    ctx.moveTo(lw * n5, o5 - rw);
-    ctx.lineTo(lw * n5, CY);
-    ctx.moveTo(-lw * n1, o5 - rw);
-    ctx.lineTo(-lw * n1, CY);
-    ctx.stroke();
-    ctx.closePath();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.arc(o3 - rw + 2, o5 - rw + 2, rw * 2, Math.PI, Math.PI * 1.5); //右下
+    line(lw * n5, o5 - rw, lw * n5, CY);
+    line(-lw * n1, o5 - rw, -lw * n1, CY);
+    arc(o3 - rw + 2, o5 - rw + 2, rw * 2, 270, 360);
     // 7
-    ctx.moveTo(o7 + rw, lw * n7);
-    ctx.lineTo(-CX, lw * n7);
-    ctx.moveTo(o7 + rw, -lw * n3);
-    ctx.lineTo(-CX, -lw * n3);
-    ctx.stroke();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.arc(o7 + rw - 2, o1 + rw - 2, rw * 2, 0, Math.PI * 2 / 4); //左上
+    line(o7 + rw, lw * n7, -CX, lw * n7);
+    line(o7 + rw, -lw * n3, -CX, -lw * n3);
+    arc(o7 + rw - 2, o1 + rw - 2, rw * 2, 90, 180);
 
-    ctx.stroke();
-    ctx.restore();
   };
+  drawWrapper();
+  // 绘制车道类型
+  const drawLaneTarget = () => {
+    let draw = (x, y, rotate, img) => {
+      selector.drawImage({
+        layer: true,
+        x: x,
+        y: y,
+        rotate: rotate,
+        source: img_lane[img],
+        opacity: 0.5
+      })
+    }
+    let yw = YW * 1.5;
+    // 1
+    for (let i = 0; i < n1; i++) {
+      draw(-yw - LW * i - 15, o1 - 4 - 15, 180, target1[i]);
+    }
+    // 3
+    for (let i = 0; i < n3; i++) {
+      draw(o3 + 4 + 15, -yw - LW * i - 15, 270, target3[i]);
+    }
+    // 5
+    for (let i = 0; i < n5; i++) {
+      draw(yw + LW * i + 15, o5 + 4 + 15, 0, target5[i]);
+    }
+    // 7
+    for (let i = 0; i < n7; i++) {
+      draw(o7 - 4 - 15, yw + LW * i + 15, 90, target7[i]);
+    }
+  };
+  drawLaneTarget();
   // 绘制信号灯
   const drawLight = () => {
     // 初始化灯组信息
@@ -399,62 +384,57 @@ APP.prototype.draw = function () {
     });
     let { d1, d2, d3, d4 } = formatterLIGHT;
 
-    let draw = (x, y, r, item) => {
-      let img = img_light["round"]["default"];
-      let w = img.width;
-      let h = img.height;
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(Math.PI / 180 * r);
+    const draw = (x, y, rotate, item) => {
       let str = "ABCDEFGHIJKLMNOPQ";
       let index = str.indexOf(item.title);
       let color = "default";
+      let name = item.title + Math.random() * 99999;
 
       if (this.PHASEDATA) {
         color = this.PHASEDATA[index];
         if ("123678".indexOf(color) === -1) {
           color = "default";
-        } else if (color === "6" || color === "7" || color === "8") {
-          console.log('倒计时');
-          setTimeout(() => {
-            ctx.globalAlpha = 0.1
-          }, 300)
-          setTimeout(() => {
-            ctx.globalAlpha = 1
-          }, 600)
         }
       }
-
-      ctx.drawImage(
-        img_light[
-        item.lightorder === "0"
-          ? item.lightsharp === "1" ? item.target : "round"
-          : "11"
+      selector.drawImage({
+        layer: true,
+        x: x,
+        y: y,
+        name: name,
+        rotate: rotate,
+        opacity: 1,
+        source: img_light[
+          item.lightorder === "0"
+            ? item.lightsharp === "1" ? item.target : "round"
+            : "11"
         ][color],
-        -w / 2,
-        -h / 2
-      );
-      if (this.isPointInsideCircle(x, y, 15)) {
-        if (this.onClick) {
+        cursors: {
+          mouseover: 'pointer',
+          mouseout: 'default'
+        },
+        click: () => {
           this.onClick(item);
         }
-        this._x = "";
-        this._y = ""
+      })
+      if (color === "6" || color === "7" || color === "8") {
+        selector.animateLayer(name, {
+          opacity: 0.2
+        }, 1000);
       }
-
-      ctx.globalAlpha = 0.3;
-      ctx.fillRect(-w / 2, -h / 2, w, h);
-      ctx.restore();
     };
     const drawTitle = (x, y, title) => {
-      ctx.save();
-      ctx.textBaseline = "middle";
-      ctx.font = "30px Verdana";
-      ctx.globalAlpha = 0.6;
-      ctx.fillStyle = "#836249";
-      ctx.fillText(title, x - ctx.measureText(title).width / 2, y);
-      ctx.restore();
-    };
+      selector.drawText({
+        layer: true,
+        x: x,
+        y: y,
+        fillStyle: '#ce874a',
+        opacity: 0.5,
+        strokeWidth: 1,
+        fontSize: 20,
+        fontFamily: 'Verdana, sans-serif',
+        text: title || "??"
+      })
+    }
 
     let yw = YW * 1.5;
     let lw = LW;
@@ -476,6 +456,7 @@ APP.prototype.draw = function () {
       draw(x, y2, 0, item);
       drawTitle(x, y2 - lw, item.title);
     };
+
     // 5 - db(3)
     let draw_5 = () => {
       for (let i = 0; i < d1.car.length; i++) {
@@ -537,56 +518,25 @@ APP.prototype.draw = function () {
     draw_7();
   };
   // 倒计时
-  const drawCountTime = () => {
-    ctx.save();
-    ctx.textBaseline = "middle";
-    ctx.font = "30px Verdana";
-    ctx.globalAlpha = 0.6;
-    ctx.fillStyle = "#836249";
-    ctx.fillText(
-      this.COUNT,
-      -ctx.measureText(this.COUNT).width / 2,
-      0
-    );
-    ctx.restore();
-  };
-
-
-  // 基本视图
-  const baseView = () => {
-    drawYellow();
-    drawLane();
-    drawDashLane()
-    drawRoadWay();
-    drawWrapper();
-    drawLaneTarget();
-    if (this.COUNT !== undefined) {
-      drawCountTime();
-    }
-    if (LIGHTDATA.length) {
-      drawLight();
-    }
-  };
-  baseView();
-
+  const countDown = () => {
+    selector.drawText({
+      layer: true,
+      fillStyle: '#ce874a',
+      strokeWidth: 2,
+      fontSize: 36,
+      fontFamily: 'Verdana, sans-serif',
+      text: this.COUNT,
+      x: 0,
+      y: 0
+    });
+  }
+  if (LIGHTDATA.length) {
+    drawLight();
+  }
+  if (this.COUNT !== undefined) {
+    countDown();
+  }
 }
-APP.prototype.isPointInsideCircle = function (x, y, r) {
-  // 点到圆心的距离小于半经
-  if (r === 0) return false;
-  if (!this._x || !this._y) return false;
-  return Math.sqrt(Math.pow(this._x - x, 2) + Math.pow(this._y - y, 2)) < r;
-}
-APP.prototype.engine = function () {
-  let canvas = this.canvas;
-  let self = this;
-  canvas.addEventListener("click", function (event) {
-    let e = event || window.event;
-    let x = e.clientX - canvas.getBoundingClientRect().left;
-    let y = e.clientY - canvas.getBoundingClientRect().top;
-    self._x = x - canvas.width / 2;
-    self._y = y - canvas.height / 2;
-    self.draw();
-  }, false);
-}
+
 
 export default APP;

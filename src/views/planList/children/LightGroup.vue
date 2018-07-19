@@ -1,6 +1,6 @@
 <template>
   <div>
-    <canvas ref="canvasview" width="800" height="640"></canvas>
+    <canvas ref="canvasview" width="800" height="640" class="lightgroup-canvas"></canvas>
 
     <el-dialog title="灯组编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false" :show-close="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="90px">
@@ -171,8 +171,7 @@ export default {
 
 <style lang="scss" scoped>
 .lightgroup-canvas {
-  width: 100%;
-  height: 100%;
-  background: #000;
+  display: block;
+  margin: 0 auto;
 }
 </style>
