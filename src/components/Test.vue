@@ -1,62 +1,38 @@
 <template>
   <div>
-    <canvas ref="view" width="800" height="600"></canvas>
+    <el-upload class="upload-demo" :action="uploadAction" name="image" :on-change="handleChange" :file-list="fileList3">
+      <el-button size="small" type="primary">点击上传</el-button>
+      <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+    </el-upload>
+    {{baseUrl}}
   </div>
 </template>
 
 <script>
-import APP from "@/libs/view";
+import axios from "axios";
 export default {
-  methods: {
-    open() {
-      this.$alert("这是一段内容", "标题名称", {
-        confirmButtonText: "确定",
-        callback: action => {
-          this.$message({
-            type: "info",
-            message: `action: ${action}`
-          });
+  data() {
+    return {
+      baseUrl: axios.defaults.baseURL,
+      uploadAction: axios.defaults.baseURL + "index/d_upload/imageUpload",
+      fileList3: [
+        {
+          name: "food.jpeg",
+          url:
+            "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
+        },
+        {
+          name: "food2.jpeg",
+          url:
+            "https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100"
         }
-      });
-    },
-    blur() {
-      console.log("blur");
-    },
-    focus() {
-      console.log("focus");
-    },
-    canvas() {
-      let draw = new APP();
-      draw.init(this.$refs.view);
-      draw.CROSSINGDATA = [
-        {
-          direction: "1",
-          roadnum: "3",
-          target: ["3", "2", "4"]
-        },
-        {
-          direction: "3",
-          roadnum: "3",
-          target: ["3", "2", "4"]
-        },
-        {
-          direction: "5",
-          roadnum: "3",
-          target: ["3", "2", "4"]
-        },
-        {
-          direction: "7",
-          roadnum: "3",
-          target: ["3", "2", "4"]
-        }
-      ];
-      draw.draw();
-    }
+      ]
+    };
   },
-  created() {
-    this.$nextTick(() => {
-      this.canvas();
-    });
+  methods: {
+    handleChange(file, fileList) {
+      this.fileList3 = fileList.slice(-3);
+    }
   }
 };
 </script>

@@ -39,7 +39,13 @@ export default {
       name2: "",
       name3: "",
       formData: {},
-      marker: null
+      marker: null,
+      road_data: [
+        { direction: 1, roadnum: 3, target: [3, 2, 4] },
+        { direction: 3, roadnum: 3, target: [3, 2, 4] },
+        { direction: 5, roadnum: 3, target: [3, 2, 4] },
+        { direction: 7, roadnum: 3, target: [3, 2, 4] }
+      ]
     };
   },
   methods: {
@@ -105,7 +111,7 @@ export default {
         lng: row.lng,
         area_id: row.area_id,
         direction: row.direction,
-        road_data: row.road_data
+        road_data: this.road_data //TODO
       }).then(res => {
         if (res.status) {
           this.getDataList();

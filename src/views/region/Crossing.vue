@@ -17,22 +17,24 @@
         </div>
       </el-header>
       <el-main>
-        <el-row :gutter="20">
+        <el-row :gutter="20" class="item-wrapper">
           <div class="el-table__empty-block" v-if="tableData.length===0">
             <span class="el-table__empty-text">暂无数据</span>
           </div>
-          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" v-for="item in tableData" :key="item.id" :style="{'margin-bottom':'10px'}">
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" v-for="item in tableData" :key="item.id" class="item" :style="{'margin-bottom':'10px'}">
             <el-card shadow="hover" :body-style="{ padding: '0px' }">
               <div class="box-image">
-                <img :src="require('@/assets/crossing.jpg')" alt="" style="width:100%;display:block">
+                <img :src="'/SignalControl/web/public/uploads/'+item.image" :onerror="default_crossing_image" alt="" style="width:100%;display:block">
                 <div class="box-image-cover">
                   <div class="box-image-cover-wrapper">
-                   <!--  <el-tooltip class="button" content="重新上传图片">
-                      <el-button type="text">
-                        <i class="el-icon-upload"></i>
-                      </el-button>
-                    </el-tooltip> -->
-                    <!--  <el-tooltip class="button" content="查看大图">
+                    <el-tooltip class="button" content="重新上传图片">
+                      <el-upload :action="uploadAction" name="image" :show-file-list="false" :on-progress="uploadProgress" :on-success="uploadSuccess" :on-error="uploadError">
+                        <el-button type="text" @click="uploadImage(item)">
+                          <i class="el-icon-upload"></i>
+                        </el-button>
+                      </el-upload>
+                    </el-tooltip>
+                    <!-- <el-tooltip class="button" content="查看大图">
                       <el-button type="text" @click="handleViewImage(item)">
                         <i class="el-icon-view"></i>
                       </el-button>
@@ -86,9 +88,13 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
+      default_crossing_image:
+        "this.src='" + require("@/assets/crossing.jpg") + "'",
+      uploadAction: axios.defaults.baseURL + "index/d_upload/imageUpload",
       id1: this.$route.params.id1,
       id2: this.$route.params.id2,
       name1: "",
@@ -99,7 +105,13 @@ export default {
         "1357": "普通十字路口"
       },
       dialogCrossingVisible: false,
-      crossingImage: ""
+      crossingImage: "",
+      road_data: [
+        { direction: 1, roadnum: 3, target: [3, 2, 4] },
+        { direction: 3, roadnum: 3, target: [3, 2, 4] },
+        { direction: 5, roadnum: 3, target: [3, 2, 4] },
+        { direction: 7, roadnum: 3, target: [3, 2, 4] }
+      ]
     };
   },
   methods: {
@@ -165,12 +177,7 @@ export default {
               lng: this.latLng.lng,
               area_id: this.id2,
               direction: "1357",
-              road_data: [
-                { direction: 1, roadnum: 3, target: [3, 2, 4] },
-                { direction: 3, roadnum: 3, target: [3, 2, 4] },
-                { direction: 5, roadnum: 3, target: [3, 2, 4] },
-                { direction: 7, roadnum: 3, target: [3, 2, 4] }
-              ]
+              road_data: this.road_data
             }).then(res => {
               if (res.status) {
                 this.getDataList();
@@ -222,7 +229,7 @@ export default {
               lng: row.lng,
               area_id: row.area_id,
               direction: row.direction,
-              road_data: row.road_data
+              road_data: this.road_data //TODO
             }).then(res => {
               if (res.status) {
                 this.getDataList();
@@ -287,6 +294,44 @@ export default {
       this.$router.push({
         path: "/region/" + this.id1 + "/" + this.id2 + "/" + row.id + "/dev"
       });
+    },
+    uploadImage(row) {
+      this.uploading_crossing_data = row;
+    },
+    uploadSuccess(response, file, fileList) {
+      console.log(response, file, fileList);
+
+      let row = this.uploading_crossing_data;
+      if (response.status) {
+        let img = response.data.save_name;
+        let row = this.uploading_crossing_data;
+        this.$http("index/d_crossing/dataUpdate", {
+          id: row.id,
+          name: row.name,
+          lat: row.lat,
+          lng: row.lng,
+          area_id: row.area_id,
+          direction: row.direction,
+          road_data: this.road_data, //TODO
+          image: img
+        }).then(res => {
+          if (res.status) {
+            this.getDataList();
+          }
+          this.$message({
+            type: res.status ? "success" : "error",
+            message: res.message
+          });
+        });
+      } else {
+        this.$message.error(response.message);
+      }
+    },
+    uploadError(err, file, fileList) {
+      this.$message.error("上传失败");
+    },
+    uploadProgress(event, file, fileList) {
+      // console.log(event, file, fileList);
     }
   },
   created() {
@@ -337,6 +382,17 @@ export default {
       top: 8px;
     }
   }
+
+  /* 瀑布流布局 */
+  .item-wrapper {
+    column-count: 1;
+    column-gap: 0;
+    counter-reset: item-counter;
+    .item {
+      box-sizing: border-box;
+      break-inside: avoid;
+    }
+  }
 }
 
 .box-image {
@@ -364,6 +420,9 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    .button {
+      display: inline-block;
+    }
   }
   &:hover &-cover {
     display: block;

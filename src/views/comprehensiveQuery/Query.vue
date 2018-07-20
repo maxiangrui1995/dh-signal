@@ -40,7 +40,7 @@
       <el-row :gutter="16">
         <el-col :xs="24" :sm="12" :md="6" :lg="4" v-for="item in crossing_3" :key="item.id" :style="{marginBottom: '16px'}">
           <el-card shadow="never" :body-style="{ padding: '0px' }">
-            <img :src="require('@/assets/crossing.jpg')" alt="" style="width:100%;display:block">
+            <img :src="'/SignalControl/web/public/uploads/'+item.image" :onerror="default_crossing_image" style="width:100%;display:block">
             <div style="padding: 14px;">
               <el-tooltip class="button" :content="item.name_.join(' / ')">
                 <span>{{ item.name }}</span>
@@ -66,7 +66,9 @@ export default {
       crossing_3: [],
       collapse_1: true,
       collapse_2: true,
-      collapse_3: true
+      collapse_3: true,
+      default_crossing_image:
+        "this.src='" + require("@/assets/crossing.jpg") + "'"
     };
   },
   methods: {

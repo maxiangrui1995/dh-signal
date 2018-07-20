@@ -344,7 +344,7 @@ export default {
           let w = (this.websocket = new WebSocket(wsUrl));
           let self = this;
           w.onopen = function() {
-            self.$message.info("websocket开始连接");
+            // self.$message.info("websocket开始连接");
             w.send(self.id);
           };
           w.onmessage = function(evt) {
@@ -358,7 +358,7 @@ export default {
             throw "websocket连接失败";
           };
           w.onclose = function() {
-            self.$message.info("websocket连接断开");
+            // self.$message.info("websocket连接断开");
             w.close();
           };
         });

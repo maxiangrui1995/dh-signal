@@ -18,10 +18,11 @@
             <el-tab-pane label="电子警察视频" name="2">
               <div class="not-content" v-if="cameraObj['2'].length==0">暂无数据</div>
               <div v-else v-for="item in cameraObj['2']" :key="item.id">
-                <video id="video1" class="video-js vjs-default-skin" autoplay preload="auto">
-                  <source src="rtmp://192.168.0.182:1935/live/1" type="rtmp/flv">
-                </video>
+
               </div>
+              <video id="video1" class="video-js vjs-default-skin" autoplay preload="auto">
+                <source src="rtmp://192.168.0.182:1935/live/1" type="rtmp/flv">
+              </video>
             </el-tab-pane>
           </el-tabs>
         </el-card>
@@ -67,6 +68,8 @@ export default {
   computed: {},
   mounted() {
     this.$nextTick(() => {
+      console.log(document.getElementById("video1"));
+
       videojs("video1", {}, function() {
         this.play();
       });
