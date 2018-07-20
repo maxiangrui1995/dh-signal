@@ -3,7 +3,7 @@
     <div class="login-con">
       <el-card>
         <div slot="header">
-          <i class="fa fa-sign-in" style="margin-right: 5px;"></i>
+          <i class="fa fa-handshake-o" style="margin-right: 5px;"></i>
           <span>欢迎登录</span>
         </div>
         <el-form ref="form" :model="formData">
