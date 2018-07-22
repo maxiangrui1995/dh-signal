@@ -10,8 +10,12 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.title) { document.title = to.meta.title }
-  if (to.name === 'login' || to.name === 'test' || to.name === 'error') {
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+  // 登录检测
+  let arr = ['login', 'test', '500', ];
+  if (arr.indexOf(to.name) > -1) {
     next();
   } else {
     if (!store.state.isLogin) {
@@ -27,11 +31,21 @@ router.beforeEach((to, from, next) => {
         }
       }).catch(() => {
         next({
-          name: 'error'
+          name: '500'
         });
       })
     } else {
-      next();
+      if (sessionStorage.getItem('locked') === 'true') {
+        if (to.name === 'lock') {
+          next();
+        } else {
+          next({
+            name: 'lock'
+          });
+        }
+      } else {
+        next();
+      }
     }
   }
 })

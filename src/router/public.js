@@ -1,137 +1,137 @@
 const region = [{
-  path: '/region',
-  name: 'region',
-  meta: {
-    title: "区域管理"
+    path: '/region',
+    name: 'region',
+    meta: {
+      title: "区域管理"
+    },
+    component: resolve => require(['@/views/region/Region'], resolve)
   },
-  component: resolve => require(['@/views/region/Region'], resolve)
-},
-{
-  path: '/region/:id1',
-  name: 'region1',
-  meta: {
-    title: "区域管理"
+  {
+    path: '/region/:id1',
+    name: 'region1',
+    meta: {
+      title: "区域管理"
+    },
+    component: resolve => require(['@/views/region/Region1'], resolve)
   },
-  component: resolve => require(['@/views/region/Region1'], resolve)
-},
-{
-  path: '/region/:id1/:id2',
-  name: 'region2',
-  meta: {
-    title: "区域管理"
+  {
+    path: '/region/:id1/:id2',
+    name: 'region2',
+    meta: {
+      title: "区域管理"
+    },
+    component: resolve => require(['@/views/region/Crossing'], resolve)
   },
-  component: resolve => require(['@/views/region/Crossing'], resolve)
-},
-{
-  path: '/region/:id1/:id2/:id3/map',
-  name: 'region-map',
-  meta: {
-    title: "区域管理"
+  {
+    path: '/region/:id1/:id2/:id3/map',
+    name: 'region-map',
+    meta: {
+      title: "区域管理"
+    },
+    component: resolve => require(['@/views/region/Map'], resolve)
   },
-  component: resolve => require(['@/views/region/Map'], resolve)
-},
-{
-  path: '/region/:id1/:id2/:id3/dev',
-  name: 'region-dev',
-  meta: {
-    title: "区域管理"
-  },
-  component: resolve => require(['@/views/region/Devs'], resolve)
-}
+  {
+    path: '/region/:id1/:id2/:id3/dev',
+    name: 'region-dev',
+    meta: {
+      title: "区域管理"
+    },
+    component: resolve => require(['@/views/region/Devs'], resolve)
+  }
 ];
 
 const planList = [{
-  path: '/planList',
-  name: 'planList',
-  meta: {
-    title: "特征参数"
-  },
-  component: resolve => require(['@/views/planList/PlanList'], resolve)
-},
-{
-  path: '/planList/:id',
-  name: 'planList-detail',
-  meta: {
-    title: "特征参数详情"
-  },
-  redirect: {
-    name: "planList-detail-base"
-  },
-  component: resolve => require(['@/views/planList/children/Index'], resolve),
-  children: [{
-    path: '/planList/:id/base',
-    name: 'planList-detail-base',
+    path: '/planList',
+    name: 'planList',
     meta: {
-      title: "特征参数-基本"
+      title: "特征参数"
     },
-    component: resolve => require(['@/views/planList/children/Base'], resolve)
+    component: resolve => require(['@/views/planList/PlanList'], resolve)
   },
   {
-    path: '/planList/:id/wayleave',
-    name: 'planList-detail-wayleave',
+    path: '/planList/:id',
+    name: 'planList-detail',
     meta: {
-      title: "特征参数-通行权"
+      title: "特征参数详情"
     },
-    component: resolve => require(['@/views/planList/children/Wayleave'], resolve)
-  },
-  {
-    path: '/planList/:id/lightgroup',
-    name: 'planList-detail-lightgroup',
-    meta: {
-      title: "特征参数-灯组"
+    redirect: {
+      name: "planList-detail-base"
     },
-    component: resolve => require(['@/views/planList/children/LightGroup'], resolve)
-  },
-  {
-    path: '/planList/:id/phase',
-    name: 'planList-detail-相位',
-    meta: {
-      title: "特征参数-相位"
-    },
-    component: resolve => require(['@/views/planList/children/Phase'], resolve)
-  },
-  {
-    path: '/planList/:id/plan',
-    name: 'planList-detail-plan',
-    meta: {
-      title: "特征参数-方案"
-    },
-    component: resolve => require(['@/views/planList/children/Plan'], resolve)
-  },
-  {
-    path: '/planList/:id/datetype',
-    name: 'planList-detail-datetype',
-    meta: {
-      title: "特征参数-日期类型"
-    },
-    component: resolve => require(['@/views/planList/children/DateType'], resolve)
-  },
-  {
-    path: '/planList/:id/scheduling',
-    name: 'planList-detail-scheduling',
-    meta: {
-      title: "特征参数-时间调度"
-    },
-    component: resolve => require(['@/views/planList/children/Scheduling'], resolve)
-  },
-  {
-    path: '/planList/:id/vehicleInspection',
-    name: 'planList-detail-vehicleInspection',
-    meta: {
-      title: "特征参数-车检器"
-    },
-    component: resolve => require(['@/views/planList/children/VehicleInspection'], resolve)
-  },
-  {
-    path: '/planList/:id/adaptive',
-    name: 'planList-detail-adaptive',
-    meta: {
-      title: "特征参数-自适应方案"
-    },
-    component: resolve => require(['@/views/planList/children/Adaptive'], resolve)
+    component: resolve => require(['@/views/planList/children/Index'], resolve),
+    children: [{
+        path: '/planList/:id/base',
+        name: 'planList-detail-base',
+        meta: {
+          title: "特征参数-基本"
+        },
+        component: resolve => require(['@/views/planList/children/Base'], resolve)
+      },
+      {
+        path: '/planList/:id/wayleave',
+        name: 'planList-detail-wayleave',
+        meta: {
+          title: "特征参数-通行权"
+        },
+        component: resolve => require(['@/views/planList/children/Wayleave'], resolve)
+      },
+      {
+        path: '/planList/:id/lightgroup',
+        name: 'planList-detail-lightgroup',
+        meta: {
+          title: "特征参数-灯组"
+        },
+        component: resolve => require(['@/views/planList/children/LightGroup'], resolve)
+      },
+      {
+        path: '/planList/:id/phase',
+        name: 'planList-detail-相位',
+        meta: {
+          title: "特征参数-相位"
+        },
+        component: resolve => require(['@/views/planList/children/Phase'], resolve)
+      },
+      {
+        path: '/planList/:id/plan',
+        name: 'planList-detail-plan',
+        meta: {
+          title: "特征参数-方案"
+        },
+        component: resolve => require(['@/views/planList/children/Plan'], resolve)
+      },
+      {
+        path: '/planList/:id/datetype',
+        name: 'planList-detail-datetype',
+        meta: {
+          title: "特征参数-日期类型"
+        },
+        component: resolve => require(['@/views/planList/children/DateType'], resolve)
+      },
+      {
+        path: '/planList/:id/scheduling',
+        name: 'planList-detail-scheduling',
+        meta: {
+          title: "特征参数-时间调度"
+        },
+        component: resolve => require(['@/views/planList/children/Scheduling'], resolve)
+      },
+      {
+        path: '/planList/:id/vehicleInspection',
+        name: 'planList-detail-vehicleInspection',
+        meta: {
+          title: "特征参数-车检器"
+        },
+        component: resolve => require(['@/views/planList/children/VehicleInspection'], resolve)
+      },
+      {
+        path: '/planList/:id/adaptive',
+        name: 'planList-detail-adaptive',
+        meta: {
+          title: "特征参数-自适应方案"
+        },
+        component: resolve => require(['@/views/planList/children/Adaptive'], resolve)
+      }
+    ]
   }
-  ]
-}
 ];
 
 const greenBelt = [{
@@ -214,14 +214,38 @@ const test = [{
   component: resolve => require(['@/components/Test'], resolve)
 }]
 
-const error = {
-  path: '/error',
-  name: 'error',
+const error500 = {
+  path: '/500',
+  name: '500',
   meta: {
-    title: "出错啦！"
+    title: "出错啦"
   },
-  component: resolve => require(['@/components/ErrorPage'], resolve)
-}
+  component: resolve => require(['@/components/error/500'], resolve)
+};
+const error404 = {
+  path: '/404',
+  name: '404',
+  meta: {
+    title: "页面丢失"
+  },
+  component: resolve => require(['@/components/error/404'], resolve)
+};
+const error403 = {
+  path: '/403',
+  name: '403',
+  meta: {
+    title: "无权限"
+  },
+  component: resolve => require(['@/components/error/403'], resolve)
+};
+const lockScreen = {
+  path: '/lock',
+  name: 'lock',
+  meta: {
+    title: "道路交通信号机平台"
+  },
+  component: resolve => require(['@/components/LockScreen'], resolve)
+};
 
 const userSetting = {
   path: '/userSetting',
@@ -242,26 +266,33 @@ const userManage = [{
 }]
 
 export default [{
-  path: '/',
-  name: 'home',
-  meta: {
-    title: "信号机控制平台"
+    path: '/',
+    name: 'home',
+    meta: {
+      title: "信号机控制平台"
+    },
+    redirect: {
+      name: "comprehensiveQuery"
+    },
+    component: resolve => require(['@/views/home/Home'], resolve),
+    children: [
+      ...region,
+      ...planList,
+      ...greenBelt,
+      ...privilege,
+      ...test,
+      ...query,
+      userSetting,
+      ...userManage,
+      error403
+    ]
   },
-  redirect: {
-    name: "comprehensiveQuery"
-  },
-  component: resolve => require(['@/views/home/Home'], resolve),
-  children: [
-    ...region,
-    ...planList,
-    ...greenBelt,
-    ...privilege,
-    ...test,
-    ...query,
-    userSetting,
-    ...userManage
-  ]
-},
-...login,
-  error
+  ...login,
+  lockScreen,
+  error500,
+  error404,
+  {
+    path: "*",
+    redirect: "/404"
+  }
 ]
