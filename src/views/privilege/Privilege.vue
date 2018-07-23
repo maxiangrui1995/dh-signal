@@ -200,7 +200,7 @@ export default {
       }); */
     },
     handleDetails(row) {
-      this.$router.push({
+      this.$router.replace({
         path: "/privilege/" + row.sch_id
       });
     },

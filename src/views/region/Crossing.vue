@@ -251,7 +251,7 @@ export default {
         .catch(() => {});
     },
     handleViewInMap(row) {
-      this.$router.push({
+      this.$router.replace({
         path: "/region/" + this.id1 + "/" + this.id2 + "/" + row.id + "/map"
       });
     },
@@ -291,7 +291,7 @@ export default {
         .catch(action => {});
     },
     handleBindDevs(row) {
-      this.$router.push({
+      this.$router.replace({
         path: "/region/" + this.id1 + "/" + this.id2 + "/" + row.id + "/dev"
       });
     },

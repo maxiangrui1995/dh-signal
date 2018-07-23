@@ -55,7 +55,7 @@ export default {
         if (res.status) {
           this.$store.commit("SETLOGIN", true);
           setTimeout(() => {
-            this.$router.push({
+            this.$router.replace({
               name: "home"
             });
           }, 600);

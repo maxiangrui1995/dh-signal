@@ -28,9 +28,7 @@ export default {
       sessionStorage.setItem("locked", true);
       setTimeout(() => {
         lockScreenBack.style.transition = "all 0s";
-        console.log('p');
-        
-        this.$router.push({
+        this.$router.replace({
           path: "/lock"
         });
       }, 800);

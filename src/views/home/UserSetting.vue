@@ -78,7 +78,7 @@ export default {
                 message: "修改成功,2s后跳转至登录界面！"
               });
               setTimeout(() => {
-                this.$router.push({
+                this.$router.replace({
                   path: "/login"
                 });
               }, 2000);

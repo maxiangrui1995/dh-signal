@@ -113,7 +113,7 @@ export default {
       // console.log(_w, parseInt(width));
     },
     viewMore(row) {
-      this.$router.push({
+      this.$router.replace({
         path: "/comprehensiveQuery/" + row.id
       });
     },

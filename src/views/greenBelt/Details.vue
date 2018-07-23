@@ -243,7 +243,7 @@ export default {
         id: row.plan_id
       }).then(res => {
         if (res.status) {
-          this.$router.push({
+          this.$router.replace({
             path: "/planList/" + res.data.id
           });
         } else {

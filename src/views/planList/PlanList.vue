@@ -129,7 +129,7 @@ export default {
         .catch(action => {});
     },
     handleDetails(row) {
-      this.$router.push({
+      this.$router.replace({
         path: "/planList/" + row.id
       });
     },

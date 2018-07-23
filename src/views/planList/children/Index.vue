@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     handleTabsClick(tab, event) {
-      this.$router.push({
+      this.$router.replace({
         path: tab.name
       });
     },

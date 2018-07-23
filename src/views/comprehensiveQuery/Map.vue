@@ -123,13 +123,13 @@ export default {
     },
     /* 实时监控 */
     handleView() {
-      this.$router.push({
+      this.$router.replace({
         path: "/comprehensiveQuery/" + this.id + "/view"
       });
     },
     /* 实时视频 */
     handleVideo() {
-      this.$router.push({
+      this.$router.replace({
         path: "/comprehensiveQuery/" + this.id + "/video"
       });
     }

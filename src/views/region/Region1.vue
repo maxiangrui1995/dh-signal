@@ -110,7 +110,7 @@ export default {
         .catch(() => {});
     },
     handleDetails(row) {
-      this.$router.push({
+      this.$router.replace({
         path: "/region/" + this.id1 + "/" + row.id
       });
     },

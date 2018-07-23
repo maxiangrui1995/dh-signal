@@ -2,14 +2,14 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router/index'
 import store from './store/index'
-import './api/index'
 import ElementUI from 'element-ui'
+import './api/index'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.min.css'
 import './styles/common.scss'
 // import './styles/theme.scss'
 
-import './mock/index'
+// import './mock/index'
 
 Vue.config.productionTip = false
 

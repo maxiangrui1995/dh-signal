@@ -172,7 +172,7 @@ export default {
       }
     },
     handleDetails(row) {
-      this.$router.push({
+      this.$router.replace({
         path: "/greenBelt/" + row.id + "/" + row.name + "/" + row.period
       });
     },

@@ -4,6 +4,7 @@
       <h3 class="layout-header-logo">道路交通信号机控制平台</h3>
       <div class="layout-header-tools">
         <full-screen @isCollapse="isCollapse"></full-screen>
+        <lock-screen/>
         <theme-switch></theme-switch>
         <el-tooltip class="layout-header-tools-btn-con" :content="hasNewMsg?'有最新消息':'暂无消息'">
           <el-badge is-dot class="item" :hidden="!hasNewMsg">
@@ -67,10 +68,12 @@
 
 <script>
 import fullScreen from "./home-components/full-screen";
+import lockScreen from "./home-components/lock-screen";
 import themeSwitch from "./home-components/theme-switch";
 export default {
   components: {
     fullScreen,
+    lockScreen,
     themeSwitch
   },
   data() {
@@ -144,7 +147,7 @@ export default {
   },
   methods: {
     menuItemSelect(index, indexPath) {
-      this.$router.push({ path: index });
+      this.$router.replace({ path: index });
     },
     handleLogout() {
       this.$confirm("是否退出?", "提示", {
@@ -159,7 +162,7 @@ export default {
             this.$http("index/d_user/logout").then(res => {
               if (res.status) {
                 setTimeout(() => {
-                  this.$router.push({
+                  this.$router.replace({
                     name: "login"
                   });
                 }, 600);
@@ -182,7 +185,7 @@ export default {
         .catch(() => {});
     },
     handleSetting() {
-      this.$router.push({
+      this.$router.replace({
         path: "/userSetting"
       });
     },
