@@ -18,7 +18,6 @@ const $http = (url, params) => {
   return new Promise((reslove, reject) => {
     axios({
       method: "post",
-      timeout: 1000,
       url: url,
       data: params
     }).then(res => {

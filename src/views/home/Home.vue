@@ -4,8 +4,6 @@
       <h3 class="layout-header-logo">道路交通信号机控制平台</h3>
       <div class="layout-header-tools">
         <full-screen @isCollapse="isCollapse"></full-screen>
-        <lock-screen/>
-        <theme-switch></theme-switch>
         <el-tooltip class="layout-header-tools-btn-con" :content="hasNewMsg?'有最新消息':'暂无消息'">
           <el-badge is-dot class="item" :hidden="!hasNewMsg">
             <el-popover placement="bottom-end" width="336">
@@ -17,12 +15,13 @@
             </el-popover>
           </el-badge>
         </el-tooltip>
-        <el-tooltip class="layout-header-tools-btn-con" content="用户设置">
+        <user-actions></user-actions>
+        <!-- <el-tooltip class="layout-header-tools-btn-con" content="用户设置">
           <i class="fa fa-cog" @click="handleSetting"></i>
         </el-tooltip>
         <el-tooltip class="layout-header-tools-btn-con" content="退出系统">
           <i class="fa fa-sign-out" @click="handleLogout"></i>
-        </el-tooltip>
+        </el-tooltip> -->
       </div>
     </el-header>
     <el-container>
@@ -68,22 +67,19 @@
 
 <script>
 import fullScreen from "./home-components/full-screen";
-import lockScreen from "./home-components/lock-screen";
-import themeSwitch from "./home-components/theme-switch";
+import userActions from "./home-components/user-actions";
 export default {
   components: {
     fullScreen,
-    lockScreen,
-    themeSwitch
+    userActions
   },
   data() {
     return {
       hasNewMsg: false,
-      userName: "admin",
       collapde: sessionStorage.getItem("collapse") === "true" ? true : false,
       menuList: [
         {
-          name: "comprehensiveQuery",
+          name: "mainQuery",
           title: "综合查询",
           icon: "fa fa-search"
         },
@@ -148,46 +144,6 @@ export default {
   methods: {
     menuItemSelect(index, indexPath) {
       this.$router.replace({ path: index });
-    },
-    handleLogout() {
-      this.$confirm("是否退出?", "提示", {
-        confirmButtonText: "退出",
-        cancelButtonText: "取消",
-        type: "warning",
-        beforeClose: (action, instance, done) => {
-          if (action === "confirm") {
-            instance.confirmButtonLoading = true;
-            instance.confirmButtonText = "注销中...";
-            // ajax
-            this.$http("index/d_user/logout").then(res => {
-              if (res.status) {
-                setTimeout(() => {
-                  this.$router.replace({
-                    name: "login"
-                  });
-                }, 600);
-              } else {
-                this.$message({
-                  type: "error",
-                  message: res.message
-                });
-              }
-              done();
-              instance.confirmButtonLoading = false;
-            });
-          } else {
-            instance.confirmButtonLoading = false;
-            done();
-          }
-        }
-      })
-        .then(() => {})
-        .catch(() => {});
-    },
-    handleSetting() {
-      this.$router.replace({
-        path: "/userSetting"
-      });
     },
     isCollapse(value) {
       this.collapde = value;

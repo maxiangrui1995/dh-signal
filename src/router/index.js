@@ -28,15 +28,19 @@ router.beforeEach((to, from, next) => {
     if (!store.state.isLogin) {
       Vue.prototype.$http('index/d_user/isLogin').then(res => {
         if (res.status) {
+          // 是否登录
           store.commit("SETLOGIN", true);
+          // 记住用户名
           store.commit("SETUSER", res.data.username);
+          // 记住权限
+          store.commit("SETPERMISSION", res.data.permission);
           next();
         } else {
           next({
             name: 'login'
           });
         }
-      }).catch(() => {
+      }).catch(error => {
         next({
           name: '500'
         });

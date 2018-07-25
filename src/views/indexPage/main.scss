@@ -1,0 +1,71 @@
+.layout-header {
+  box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+  background: #fff;
+  z-index: 1;
+  position: relative;
+  &-logo {
+    float: left;
+  }
+  &-inner {
+    height: 60px;
+    line-height: 60px;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  &-tools {
+    float: right;
+    &-btn-con {
+      text-align: center;
+      cursor: pointer;
+      margin: 22px 10px;
+      font-size: 16px;
+      color: #000;
+    }
+    .el-badge {
+      vertical-align: inherit;
+    }
+  }
+}
+
+.layout-aside {
+  background: #fff;
+  border-right: solid 1px #e6e6e6;
+  .el-menu {
+    border-right: none;
+    .fa {
+      margin-right: 5px;
+      font-size: 20px;
+    }
+  }
+  .el-menu:not(.el-menu--collapse) {
+    width: 200px;
+    .fa {
+      font-size: 16px;
+    }
+  }
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
+  }
+  .el-scrollbar__bar.is-horizontal {
+    display: none;
+  }
+}
+
+/*fade-transform*/
+
+.fade-transform-leave-active,
+.fade-transform-enter-active {
+  transition: all 0.3s;
+}
+
+.fade-transform-enter {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
