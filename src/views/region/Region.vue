@@ -10,7 +10,7 @@
             <el-button type="primary" icon="el-icon-plus" :style="{marginRight: '10px'}" @click="handleCreate">
               新增
             </el-button>
-            <el-input suffix-icon="el-icon-search" placeholder="请输入名称进行检索" style="width: 200px"></el-input>
+            <el-input suffix-icon="el-icon-search" placeholder="请输入名称进行检索" style="width: 200px" readonly></el-input>
           </div>
         </div>
       </el-header>
@@ -59,7 +59,7 @@ export default {
       });
     },
     handleCreate() {
-      this.$prompt("输入名称后将新增一条记录", "提示", {
+      this.$prompt("输入要新增的区域名称", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputValidator: value => {
@@ -75,7 +75,7 @@ export default {
         beforeClose: (action, instance, done) => {
           if (action === "confirm") {
             instance.confirmButtonLoading = true;
-            instance.confirmButtonText = "初始化中...";
+            instance.confirmButtonText = "新增中...";
             // ajax
             this.$http("index/d_area/dataAdd", {
               name: instance.inputValue,
@@ -106,7 +106,7 @@ export default {
       });
     },
     handleUpdate(row) {
-      this.$prompt("输入名称后将替换原有记录", "提示", {
+      this.$prompt("输入新的名称后将替换之前的名称", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputValue: row.name,

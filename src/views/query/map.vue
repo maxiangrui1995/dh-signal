@@ -6,12 +6,12 @@
       <crossing-tree :crossingData="crossingData" :gmap="gmap" @treeClick="handleTreeClick" @switchCrossingName="handleSwitchCrossingName"></crossing-tree>
     </div>
 
-    <div style="position:absolute; top:20px; left:50%; transform: translateX(-50%)">
+    <!-- <div style="position:absolute; top:20px; left:50%; transform: translateX(-50%)" v-if="Object.keys(crossingSelected).length > 0">
       <el-button type="primary">实时监控</el-button>
       <el-button type="primary">电子警察视频</el-button>
       <el-button type="primary">车流量视频</el-button>
       <el-button type="primary">车流量</el-button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -24,6 +24,7 @@ export default {
     return {
       crossingMarkers: {}, //路口标记
       crossingTitleMarkers: {},
+      crossingInfoWindow: {},
       bounds: null, //地图标记点的集合
       crossingSelected: {} //选中的路口
     };
@@ -70,11 +71,15 @@ export default {
         map: this.gmap,
         data: row
       });
-      // 路口弹窗
+      // 路口标题
       this.crossingTitleMarkers[row.id] = new this.gmap.showTitle(
         this.crossingMarkers[row.id],
         row.name
       );
+      // 路口弹窗
+      this.crossingInfoWindow[row.id] = new google.maps.InfoWindow({
+        content: "123"
+      });
 
       this.bounds.extend(p);
       this.handleCrossingClick(this.crossingMarkers[row.id]);
@@ -87,8 +92,10 @@ export default {
         if (i == data.id) {
           this.crossingSelected = d.data;
           d.setIcon(require("@/assets/gmarker_selected.png"));
+          this.crossingInfoWindow[data.id].open(this.gmap, d);
         } else {
           d.setIcon(require("@/assets/gmarker.png"));
+          this.crossingInfoWindow[i].setMap(null);
         }
       }
     },
@@ -113,7 +120,7 @@ export default {
     },
     // 显示控制按钮(实时监控，实时视频。。。)
     showControlButton() {
-      console.log(this.crossingSelected);
+      // console.log(this.crossingSelected);
     }
   },
   computed: {

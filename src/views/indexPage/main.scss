@@ -53,6 +53,14 @@
   }
 }
 
+.layout-content {
+  >.el-scrollbar {
+    >.el-scrollbar__wrap {
+      overflow-x: hidden;
+    }
+  }
+}
+
 /*fade-transform*/
 
 .fade-transform-leave-active,

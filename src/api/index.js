@@ -41,3 +41,4 @@ const $http = (url, params) => {
 };
 
 Vue.prototype.$http = $http;
+Vue.prototype.ajaxURL = axios.defaults.baseURL;

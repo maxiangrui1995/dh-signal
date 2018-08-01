@@ -12,7 +12,7 @@
             <el-button type="primary" icon="el-icon-plus" :style="{marginRight: '10px'}" @click="handleCreate">
               新增
             </el-button>
-            <el-input suffix-icon="el-icon-search" placeholder="请输入名称进行检索" style="width: 200px"></el-input>
+            <el-input suffix-icon="el-icon-search" placeholder="请输入名称进行检索" style="width: 200px" readonly></el-input>
           </div>
         </div>
       </el-header>
@@ -24,7 +24,7 @@
           <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="4" v-for="item in tableData" :key="item.id" class="item" :style="{'margin-bottom':'10px'}">
             <el-card shadow="hover" :body-style="{ padding: '0px' }">
               <div class="box-image">
-                <img :src="'/SignalControl/web/public/uploads/'+item.image" :onerror="default_crossing_image" alt="" style="width:100%;display:block">
+                <img :src="'http://192.168.1.14/SignalControl/web/public/uploads/'+item.image" :onerror="default_crossing_image" alt="" style="width:100%;display:block">
                 <div class="box-image-cover">
                   <div class="box-image-cover-wrapper">
                     <el-tooltip class="button" content="重新上传图片">
@@ -78,12 +78,6 @@
         </el-row>
       </el-main>
     </el-container>
-
-    <el-dialog title="路口图片" :visible.sync="dialogCrossingVisible" width="40%">
-      <div>
-        <img :src="crossingImage" alt="" style="width: 100%; display: block;">
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -94,6 +88,7 @@ export default {
     return {
       default_crossing_image:
         "this.src='" + require("@/assets/crossing.jpg") + "'",
+      crossing_url: axios.defaults.baseURL,
       uploadAction: axios.defaults.baseURL + "index/d_upload/imageUpload",
       id1: this.$route.params.id1,
       id2: this.$route.params.id2,
@@ -299,8 +294,6 @@ export default {
       this.uploading_crossing_data = row;
     },
     uploadSuccess(response, file, fileList) {
-      console.log(response, file, fileList);
-
       let row = this.uploading_crossing_data;
       if (response.status) {
         let img = response.data.save_name;
@@ -340,6 +333,7 @@ export default {
     } else {
       this.getDataList();
     }
+    console.log(this.ajaxURL);
   },
   computed: {
     crossingData() {

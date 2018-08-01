@@ -6,7 +6,7 @@
         <el-switch v-model="switchCrossingName" @change="switchCrossing"></el-switch>
       </el-tooltip>
     </div>
-    <el-scrollbar :style="{height: '500px'}">
+    <el-scrollbar :style="{height: '460px'}">
       <div style="padding: 10px;">
         <el-input placeholder="输入关键字进行过滤" v-model="filterText" :style="{marginBottom: '10px'}"></el-input>
         <el-tree :data="crossingData" :filter-node-method="filterTree" :highlight-current="true" ref="tree" @node-click="handleTreeClick"></el-tree>
@@ -24,12 +24,49 @@ export default {
   methods: {
     handleTreeClick(data) {
       if (data.lat && data.lng) {
-        let bounds = new google.maps.LatLngBounds();
-        let p = new google.maps.LatLng(data.lat, data.lng);
+        // let bounds = new google.maps.LatLngBounds();
+        // let p = new google.maps.LatLng(data.lat, data.lng);
         // bounds.extend(p);
         // this.gmap.fitBounds(bounds);
-        this.gmap.panTo(p);
-        this.$emit("treeClick", data);
+        // this.gmap.panTo(p);
+        // this.$emit("treeClick", data);
+      }
+      let bounds = new google.maps.LatLngBounds();
+      // 若点击的是区域1（pid=0）
+      if (data.pid === "0") {
+        if (data.children && data.children.length) {
+          data.children.forEach(item => {
+            if (item.children && item.children.length) {
+              item.children.forEach(item => {
+                let p = new google.maps.LatLng(item.lat, item.lng);
+                bounds.extend(p);
+              });
+            }
+          });
+        }
+      } else {
+        // 路口
+        if (data.lat && data.lng && !data.children) {
+          let p = new google.maps.LatLng(data.lat, data.lng);
+          this.gmap.panTo(p);
+          this.$emit("treeClick", data);
+        } else {
+          // 区域2
+          if (data.children) {
+            data.children.forEach(item => {
+              let p = new google.maps.LatLng(item.lat, item.lng);
+              bounds.extend(p);
+            });
+          }
+        }
+      }
+      if (
+        bounds.fa.b !== 180 &&
+        bounds.fa.b !== -180 &&
+        bounds.ta.d !== 1 &&
+        bounds.ta.b !== -1
+      ) {
+        this.gmap.fitBounds(bounds);
       }
     },
     filterTree(value, data) {
@@ -52,6 +89,9 @@ export default {
 .my-card {
   .el-card__header {
     padding: 14px 20px;
+  }
+  .el-scrollbar__wrap {
+    overflow-x: hidden;
   }
 }
 </style>

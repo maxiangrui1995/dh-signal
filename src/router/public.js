@@ -5,7 +5,7 @@ const region = [{
   meta: {
     title: "区域管理"
   },
-  component: resolve => require(['@/views/region/Region'], resolve)
+  component: resolve => require(['@/views/regionManage/first-region'], resolve)
 },
 {
   path: '/region/:id1',
@@ -13,7 +13,7 @@ const region = [{
   meta: {
     title: "区域管理"
   },
-  component: resolve => require(['@/views/region/Region1'], resolve)
+  component: resolve => require(['@/views/regionManage/second-region'], resolve)
 },
 {
   path: '/region/:id1/:id2',
@@ -21,7 +21,7 @@ const region = [{
   meta: {
     title: "区域管理"
   },
-  component: resolve => require(['@/views/region/Crossing'], resolve)
+  component: resolve => require(['@/views/regionManage/third-crossing'], resolve)
 },
 {
   path: '/region/:id1/:id2/:id3/map',
@@ -39,6 +39,41 @@ const region = [{
   },
   component: resolve => require(['@/views/region/Devs'], resolve)
 }
+];
+// 设备管理
+const devs = [
+  {
+    path: '/signal',
+    name: 'signal',
+    meta: {
+      title: "设备管理-信号机"
+    },
+    component: resolve => require(['@/views/regionManage/devs/signal'], resolve)
+  },
+  {
+    path: '/ups',
+    name: 'ups',
+    meta: {
+      title: "设备管理-备用电源"
+    },
+    component: resolve => require(['@/views/regionManage/devs/ups'], resolve)
+  },
+  {
+    path: '/camera',
+    name: 'camera',
+    meta: {
+      title: "设备管理-相机"
+    },
+    component: resolve => require(['@/views/regionManage/devs/camera'], resolve)
+  },
+  {
+    path: '/ipc',
+    name: 'ipc',
+    meta: {
+      title: "设备管理-车检器"
+    },
+    component: resolve => require(['@/views/regionManage/devs/ipc'], resolve)
+  }
 ];
 
 // 特征参数
@@ -261,6 +296,7 @@ export default [
     component: resolve => require(['@/views/indexPage/home'], resolve),
     children: [
       ...region,
+      ...devs,
       ...planList,
       ...greenBelt,
       ...privilege,

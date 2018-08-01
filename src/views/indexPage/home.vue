@@ -32,12 +32,14 @@
           </el-menu>
         </el-scrollbar>
       </el-aside>
-      <el-main :style="{padding: '0'}" class="layout-content">
-        <el-scrollbar :style="{height: '100%', overflowY: 'hidden'}">
-          <transition name="fade-transform" mode="out-in">
-            <router-view></router-view>
-          </transition>
-        </el-scrollbar>
+      <el-main :style="{padding: '0', position: 'relative'}" class="layout-content">
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0;">
+          <el-scrollbar :style="{height: '100%', overflowY: 'hidden'}">
+            <transition name="fade-transform" mode="out-in">
+              <router-view></router-view>
+            </transition>
+          </el-scrollbar>
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -85,7 +87,7 @@ export default {
                 },
                 {
                   name: "ipc",
-                  title: "工控机"
+                  title: "车检器"
                 }
               ]
             }

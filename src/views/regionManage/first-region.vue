@@ -4,8 +4,7 @@
       <el-header class="page-header">
         <div class="page-header-inner">
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item :to="{ path: '/region' }">区域管理</el-breadcrumb-item>
-            <el-breadcrumb-item>{{name}}</el-breadcrumb-item>
+            <el-breadcrumb-item>区域管理</el-breadcrumb-item>
           </el-breadcrumb>
           <div style="float:right;">
             <el-button type="primary" icon="el-icon-plus" :style="{marginRight: '10px'}" @click="handleCreate">
@@ -42,33 +41,25 @@
 export default {
   data() {
     return {
-      id1: this.$route.params.id1,
-      name: "",
       loading: true,
       tableData: []
     };
   },
   methods: {
+    // 请求数据
     getDataList() {
       this.loading = true;
       this.$http("index/d_area/treeList").then(res => {
         let data = res.data;
         if (res.status === "1") {
+          this.tableData = data;
           this.$store.dispatch("SETCROSSING", data);
         }
+        this.loading = false;
       });
-    },
-    formatterData(data) {
-      data.forEach(item => {
-        if (item.id == this.id1) {
-          this.tableData = item.children || [];
-          this.name = item.name;
-        }
-      });
-      this.loading = false;
     },
     handleCreate() {
-      this.$prompt("输入要新增的道路名称", "提示", {
+      this.$prompt("输入要新增的区域名称", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputValidator: value => {
@@ -88,7 +79,7 @@ export default {
             // ajax
             this.$http("index/d_area/dataAdd", {
               name: instance.inputValue,
-              pid: this.id1
+              pid: 0
             }).then(res => {
               if (res.status) {
                 this.getDataList();
@@ -111,7 +102,7 @@ export default {
     },
     handleDetails(row) {
       this.$router.replace({
-        path: "/region/" + this.id1 + "/" + row.id
+        path: "/region/" + row.id
       });
     },
     handleUpdate(row) {
@@ -191,32 +182,10 @@ export default {
       })
         .then(action => {})
         .catch(action => {});
-    },
-    handleFormSubmit() {
-      this.$refs["form"].validate(valid => {
-        if (!valid) return false;
-      });
     }
   },
   created() {
-    if (this.crossingData.length) {
-      this.formatterData(this.crossingData);
-    } else {
-      this.getDataList();
-    }
-  },
-  computed: {
-    crossingData() {
-      return this.$store.state.crossingData;
-    }
-  },
-  watch: {
-    crossingData(data) {
-      this.formatterData(data);
-    }
+    this.getDataList();
   }
 };
 </script>
-
-<style>
-</style>
