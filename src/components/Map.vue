@@ -58,7 +58,41 @@ export default {
       this.OverlayView(gMap);
       this.$store.dispatch("SETGMAP", gMap);
     },
+    /* 自定义地图叠加层 */
     OverlayView(gmap) {
+      /**
+          MapPanes.mapPane|overlayLayer|markerLayer|overlayMouseTarget|floatPane
+       */
+
+      /* function infowindow(marker, htmlStr) {
+        this.marker = marker;
+        this.htmlStr = htmlStr;
+        this.setMap(marker.map);
+      }
+      infowindow.prototype = new google.maps.OverlayView();
+      infowindow.prototype.onAdd = function() {
+        var div = document.createElement("div");
+        div.innerHTML = this.htmlStr;
+        div.className = "infowindow";
+        div.style.position = "absolute";
+        this.div_ = div;
+        this.getPanes().floatPane.appendChild(div);
+      };
+      infowindow.prototype.draw = function() {
+        var overlayProjection = this.getProjection();
+        var sw = overlayProjection.fromLatLngToDivPixel(this.marker.position);
+        var div = this.div_;
+        div.style.left = sw.x + 18 + "px";
+        div.style.top = sw.y - 30 + "px";
+      };
+      infowindow.prototype.onRemove = function() {
+        this.div_.className = "fade-leave";
+        setTimeout(() => {
+          this.div_.parentNode.removeChild(this.div_);
+          this.div_ = null;
+        }, 500);
+      }; */
+
       // 标题叠加层
       function title(marker, htmlStr) {
         this.marker = marker;
@@ -127,8 +161,7 @@ export default {
         }, 500);
       };
 
-      gmap.popover = title;
-      gmap.showTitle = title2;
+      // gmap.infowindow = _infowindow;
     }
   },
   created() {
@@ -157,6 +190,16 @@ export default {
     opacity: 0;
   }
 }
+
+.infowindow {
+  position: absolute;
+  min-width: 60px;
+  border: 1px solid #ebeef5;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  z-index: 2000;
+  color: #f1f1f1;
+  background: linear-gradient(135deg, #374bc6, #1f74f1);
+}
 .my-popper {
   position: absolute;
   min-width: 60px;
@@ -170,7 +213,7 @@ export default {
   font-size: 14px;
   font-weight: 700px;
   white-space: nowrap;
-  padding: 8px 16px;
+  padding: 8px 10px;
   animation-duration: 0.5s;
   animation-fill-mode: both;
   animation-name: fadeIn;

@@ -2,9 +2,9 @@
   <el-card class="my-card" :body-style="{ padding: '0' }">
     <div slot="header">
       <span>区域列表</span>
-      <el-tooltip style="float: right; padding: 3px 0" :content="(switchCrossingName ? '关闭' : '开启') + '名称显示'">
+      <!-- <el-tooltip style="float: right; padding: 3px 0" :content="(switchCrossingName ? '关闭' : '开启') + '名称显示'">
         <el-switch v-model="switchCrossingName" @change="switchCrossing"></el-switch>
-      </el-tooltip>
+      </el-tooltip> -->
     </div>
     <el-scrollbar :style="{height: '460px'}">
       <div style="padding: 10px;">
@@ -23,14 +23,6 @@ export default {
   },
   methods: {
     handleTreeClick(data) {
-      if (data.lat && data.lng) {
-        // let bounds = new google.maps.LatLngBounds();
-        // let p = new google.maps.LatLng(data.lat, data.lng);
-        // bounds.extend(p);
-        // this.gmap.fitBounds(bounds);
-        // this.gmap.panTo(p);
-        // this.$emit("treeClick", data);
-      }
       let bounds = new google.maps.LatLngBounds();
       // 若点击的是区域1（pid=0）
       if (data.pid === "0") {

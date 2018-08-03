@@ -6,27 +6,29 @@
       <crossing-tree :crossingData="crossingData" :gmap="gmap" @treeClick="handleTreeClick" @switchCrossingName="handleSwitchCrossingName"></crossing-tree>
     </div>
 
-    <!-- <div style="position:absolute; top:20px; left:50%; transform: translateX(-50%)" v-if="Object.keys(crossingSelected).length > 0">
-      <el-button type="primary">实时监控</el-button>
-      <el-button type="primary">电子警察视频</el-button>
-      <el-button type="primary">车流量视频</el-button>
-      <el-button type="primary">车流量</el-button>
-    </div> -->
+    <realtime-monitor :dialogVisible="visible_monitor" :crossingView="crossingView" @dialogClose="monitorDialogClose"></realtime-monitor>
   </div>
 </template>
 
 <script>
 import GMap from "@/components/Map";
 import crossingTree from "./components/crossing-tree";
+import realtimeMonitor from "./components/realtime-monitor";
 export default {
-  components: { GMap, crossingTree },
+  components: { GMap, crossingTree, realtimeMonitor },
   data() {
     return {
       crossingMarkers: {}, //路口标记
       crossingTitleMarkers: {},
       crossingInfoWindow: {},
       bounds: null, //地图标记点的集合
-      crossingSelected: {} //选中的路口
+      imageLoadError: "this.src='" + require("@/assets/crossing.jpg") + "'",
+      baseUrl:
+        process.env.NODE_ENV === "production"
+          ? "../web/public/"
+          : "http://192.168.1.14/SignalControl/web/public/",
+      visible_monitor: false, //实时监控
+      crossingView: {} //路口的设备信息
     };
   },
   methods: {
@@ -71,15 +73,14 @@ export default {
         map: this.gmap,
         data: row
       });
-      // 路口标题
+      /* // 路口标题
       this.crossingTitleMarkers[row.id] = new this.gmap.showTitle(
         this.crossingMarkers[row.id],
         row.name
       );
+       */
       // 路口弹窗
-      this.crossingInfoWindow[row.id] = new google.maps.InfoWindow({
-        content: "123"
-      });
+      this.crossingInfoWindow[row.id] = new google.maps.InfoWindow();
 
       this.bounds.extend(p);
       this.handleCrossingClick(this.crossingMarkers[row.id]);
@@ -90,9 +91,8 @@ export default {
       for (let i in this.crossingMarkers) {
         let d = this.crossingMarkers[i];
         if (i == data.id) {
-          this.crossingSelected = d.data;
           d.setIcon(require("@/assets/gmarker_selected.png"));
-          this.crossingInfoWindow[data.id].open(this.gmap, d);
+          this.showInfoWIndow(d);
         } else {
           d.setIcon(require("@/assets/gmarker.png"));
           this.crossingInfoWindow[i].setMap(null);
@@ -118,9 +118,111 @@ export default {
         self.handleTreeClick(this.data);
       });
     },
-    // 显示控制按钮(实时监控，实时视频。。。)
-    showControlButton() {
-      // console.log(this.crossingSelected);
+    // 显示路口消息弹窗
+    showInfoWIndow(marker) {
+      let info = this.crossingInfoWindow[marker.id];
+
+      info.setContent("loading...");
+      info.open(this.gmap, marker);
+      this.getCrossingView(marker.id, info);
+    },
+    // 获得路口下设备信息
+    getCrossingView(id, infoWindow) {
+      this.$http("index/d_crossing/dataView", {
+        id: id
+      }).then(res => {
+        let data = res.data;
+        if (res.status === "1") {
+          let dev = res.data;
+          let crossing = dev.crossing;
+          let machine = dev.machine ? [dev.machine] : "";
+          let ups = dev.ups ? [dev.ups] : "";
+          let ipc = dev.ipc ? dev.ipc : [];
+          let camera = dev.camera ? dev.camera : [];
+          let img = this.baseUrl + "uploads/" + crossing.image;
+          let str = `<div class="info-container">
+            <div class="info-container-title">${crossing.name}</div>
+            <div class="info-container-info">
+              <span class="tag">信号机<sup class="badge">
+              ${machine.length}</sup></span>
+              <span class="tag">备用电源<sup class="badge">
+              ${ups.length}</sup></span>
+              <span class="tag">相机<sup class="badge">
+              ${camera.length}</sup></span>
+              <span class="tag">工控机<sup class="badge">
+              ${ipc.length}</sup></span>
+            </div>
+            <div class="info-container-content">
+              <img src="${img}" onerror="${this.imageLoadError}"/>
+            </div>
+            <div class="info-container-footer">
+              <button class="button" id="infowindow-${id}">实时监控</button>
+              <button class="button" id="infowindow1-${id}">电子警察视频</button>
+              <button class="button" id="infowindow2-${id}">车流量视频</button>
+            </div>
+          </div>`;
+          infoWindow.setContent(str);
+
+          this.crossingView = dev;
+
+          document.getElementById(`infowindow-${id}`).onclick = () => {
+            if (!machine.length) {
+              return this.$message.warning("未配置信号机");
+            }
+            this.showRealtimeMonitorDialog(id);
+          };
+          document.getElementById(`infowindow1-${id}`).onclick = () => {
+            if (!camera.length) {
+              this.$message.warning("未配置相机");
+            } else {
+              let arr = [];
+              camera.forEach(item => {
+                if (item.type == "1") {
+                  arr.push(item);
+                }
+              });
+              if (!arr.length) {
+                this.$message.warning("未配置电子警察相机");
+              } else {
+                this.showElectronPoliceDialog(id);
+              }
+            }
+          };
+          document.getElementById(`infowindow2-${id}`).onclick = () => {
+            if (!camera.length) {
+              this.$message.warning("未配置相机");
+            } else {
+              let arr = [];
+              camera.forEach(item => {
+                if (item.type == "2") {
+                  arr.push(item);
+                }
+              });
+              if (!arr.length) {
+                this.$message.warning("未配置车流量相机");
+              } else {
+                this.showRealtimeMonitorDialog(id);
+              }
+            }
+          };
+        }
+      });
+    },
+    // 弹出实时监测对话框
+    showRealtimeMonitorDialog(crossing_id) {
+      console.log(crossing_id);
+      this.visible_monitor = true;
+    },
+    monitorDialogClose() {
+      this.visible_monitor = false;
+    },
+    // 弹出电子警察视频
+    showElectronPoliceDialog(crossing_id) {
+      console.log(crossing_id);
+    },
+    // 弹出车流量视频
+    showVehicleFlowDialog(crossing_id) {
+      console.log(crossing_id);
     }
   },
   computed: {
@@ -141,13 +243,11 @@ export default {
     },
     crossingData() {
       this.drawStart();
-    },
-    crossingSelected() {
-      this.showControlButton();
     }
   }
 };
 </script>
 
-<style>
+<style lang="scss">
+@import "./main.scss";
 </style>

@@ -8,7 +8,7 @@
         </div>
         <el-form ref="form" :model="formData">
           <el-form-item prop="username">
-            <el-input v-model="formData.username" placeholder="请输入用户名">
+            <el-input v-model="formData.username" :autofocus="true" placeholder="请输入用户名">
               <i slot="prefix" class="el-input__icon fa fa-user"></i>
             </el-input>
           </el-form-item>

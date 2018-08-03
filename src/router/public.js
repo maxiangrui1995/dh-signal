@@ -23,22 +23,22 @@ const region = [{
   },
   component: resolve => require(['@/views/regionManage/third-crossing'], resolve)
 },
-{
-  path: '/region/:id1/:id2/:id3/map',
-  name: 'region-map',
-  meta: {
-    title: "区域管理"
-  },
-  component: resolve => require(['@/views/region/Map'], resolve)
-},
-{
-  path: '/region/:id1/:id2/:id3/dev',
-  name: 'region-dev',
-  meta: {
-    title: "区域管理"
-  },
-  component: resolve => require(['@/views/region/Devs'], resolve)
-}
+// {
+//   path: '/region/:id1/:id2/:id3/map',
+//   name: 'region-map',
+//   meta: {
+//     title: "区域管理"
+//   },
+//   component: resolve => require(['@/views/region/Map'], resolve)
+// },
+// {
+//   path: '/region/:id1/:id2/:id3/dev',
+//   name: 'region-dev',
+//   meta: {
+//     title: "区域管理"
+//   },
+//   component: resolve => require(['@/views/region/Devs'], resolve)
+// }
 ];
 // 设备管理
 const devs = [
@@ -264,14 +264,14 @@ const error403 = {
 };
 
 // 个人中心
-const userSetting = {
-  path: '/userSetting',
-  name: 'userSetting',
-  meta: {
-    title: "用户设置"
-  },
-  component: resolve => require(['@/views/home/UserSetting'], resolve)
-}
+// const userSetting = {
+//   path: '/userSetting',
+//   name: 'userSetting',
+//   meta: {
+//     title: "用户设置"
+//   },
+//   component: resolve => require(['@/views/home/UserSetting'], resolve)
+// }
 
 // 用户管理
 const userManage = [{
@@ -302,7 +302,7 @@ export default [
       ...privilege,
       ...test,
       ...query,
-      userSetting,
+      // userSetting,
       ...userManage,
       error403
     ]
