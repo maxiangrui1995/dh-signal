@@ -33,7 +33,7 @@
             </el-table-column>
         </el-table>
 
-        <el-dialog title="车检器编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false" :show-close="false">
+        <el-dialog title="车检器编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false">
             <el-form :model="formData" :rules="rules" ref="form" label-width="80px">
                 <el-form-item label="车道1">
                     <el-input-number controls-position="right" v-model="formData.channel_1" :max="255" :min="0" :style="{width:'100%'}"></el-input-number>

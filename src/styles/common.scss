@@ -17,6 +17,14 @@ input:-webkit-autofill {
   display: inline-block;
 }
 
+.el-main {
+  position: relative;
+}
+
+.layout-content {
+  overflow: hidden;
+}
+
 // 自定义分割符
 .el-divider {
   margin: 0 8px;
@@ -57,135 +65,13 @@ input:-webkit-autofill {
   // background-color: rgba(64, 158, 255, 0.6);
 }
 
-.el-scrollbar__wrap {
-  overflow-x: hidden;
-}
-
-// 地图
-.gm-style {
-  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", Arial, sans-serif;
-}
-
-/* 
-.el-popover-box_status {
-  font-size: 22px;
-  margin-right: 4px;
-  vertical-align: middle;
-}
-
-.el-popover-box_status.el-icon-question {
-  color: #e6a23c;
-}
-
-.el-dialog__headerbtn {
-  top: 24px;
-}
-
-.layout-content>.el-scrollbar {
+.layout-content {
   .el-scrollbar__wrap {
     overflow-x: hidden;
   }
 }
 
-.el-input-number.is-controls-right .el-input__inner {
-  text-align: left;
-}
-
- */
-
-/* .overlayview {
-  position: absolute;
-  background: #fff;
-  min-width: 60px;
-  border: 1px solid #ebeef5;
-  z-index: 2000;
-  color: #495060;
-  text-align: justify;
-  font-size: 14px;
-  white-space: nowrap;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
-  animation-duration: 0.5s;
-  animation-fill-mode: both;
-  animation-name: fadeIn;
-  &-title {
-    position: relative;
-    padding: 8px 16px;
-    margin: 0;
-    &:after {
-      content: "";
-      display: block;
-      height: 1px;
-      position: absolute;
-      left: 8px;
-      right: 8px;
-      bottom: 0;
-      background-color: #e9eaec;
-    }
-  }
-  &-title__noborder {
-    &:after {
-      display: none;
-    }
-  }
-  &-body {
-    padding: 8px 14px;
-    &-inner {
-      height: 24px;
-      line-height: 24px;
-    }
-  }
-  &-arrow,
-  &-arrow:after {
-    display: block;
-    width: 0;
-    height: 0;
-    position: absolute;
-    border-color: transparent;
-    border-style: solid;
-  }
-  &-arrow {
-    top: 11px;
-    left: -8px;
-    border-width: 8px 8px 8px 0;
-    border-right-color: hsla(0, 0%, 85%, .5);
-  }
-  &-arrow:after {
-    content: " ";
-    left: 0px;
-    bottom: -7px;
-    border-width: 8px;
-    border-left-width: 0;
-    border-right-width: 8px;
-    border-right-color: #fff;
-  }
-} */
-
-/* .side-dialog {
-  min-width: 220px;
-  height: 100%;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .1);
-  border: 1px solid #ebeef5;
-  background-color: #fff;
-  color: #303133;
-  transition: .3s;
-} */
-
-/* .not-content {
-  text-align: center;
-  font-size: 12px;
-  color: #d5dce8;
-} */
-
-@mixin button($background) {
-  font-size: 1em;
-  padding: 0.5em 1.0em;
-  text-decoration: none;
-  color: #fff;
-  background: $background;
-}
-
-$width: 100;
-.div {
-  width: 50%;
-  @include button(green);
+// 地图
+.gm-style {
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "\5FAE\8F6F\96C5\9ED1", Arial, sans-serif;
 }

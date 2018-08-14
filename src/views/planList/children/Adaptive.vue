@@ -48,7 +48,7 @@
     <el-pagination @size-change="pageSizeChange2" @current-change="pageCurrentChange2" :current-page="pagePage2" :page-size="pageRows2" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals2" v-if="pageTotals2>0" :style="{'margin':'10px 0 0','text-align':'right'}">
     </el-pagination>
 
-    <el-dialog title="自适应方案编辑" :visible.sync="dialogVisible1" width="560px" :close-on-click-modal="false" :show-close="false">
+    <el-dialog title="自适应方案编辑" :visible.sync="dialogVisible1" width="560px" :close-on-click-modal="false">
       <el-form :model="formData1" ref="form1" label-width="100px">
         <el-form-item label="统计时间间隔">
           <el-input-number v-model.number="formData1.statistic_minutes" :min="0"></el-input-number>
@@ -76,7 +76,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog :title="dialogTitle2" :visible.sync="dialogVisible2" width="560px" :close-on-click-modal="false" :show-close="false">
+    <el-dialog :title="dialogTitle2" :visible.sync="dialogVisible2" width="560px" :close-on-click-modal="false">
       <el-form :model="formData2" ref="form2" label-width="100px">
         <el-form-item label="东西车流量">
           <el-input-number v-model.number="formData2.proportion_east_west" :min="0"></el-input-number>

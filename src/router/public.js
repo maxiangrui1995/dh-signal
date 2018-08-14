@@ -31,14 +31,14 @@ const region = [{
 //   },
 //   component: resolve => require(['@/views/region/Map'], resolve)
 // },
-// {
-//   path: '/region/:id1/:id2/:id3/dev',
-//   name: 'region-dev',
-//   meta: {
-//     title: "区域管理"
-//   },
-//   component: resolve => require(['@/views/region/Devs'], resolve)
-// }
+{
+  path: '/region/:id1/:id2/:id3/dev',
+  name: 'region-dev',
+  meta: {
+    title: "区域管理"
+  },
+  component: resolve => require(['@/views/regionManage/four-devs'], resolve)
+}
 ];
 // 设备管理
 const devs = [

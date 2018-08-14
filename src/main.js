@@ -3,12 +3,13 @@ import App from './App.vue'
 import router from './router/index'
 import store from './store/index'
 import ElementUI from 'element-ui'
+import Wrapper from './components/wrapper/index'
 import promise from 'es6-promise'
 import './api/index'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.min.css'
 import './styles/common.scss'
-// import './styles/theme.scss'
+import './styles/theme.scss'
 
 // import './mock/index'
 
@@ -19,6 +20,8 @@ promise.polyfill()
 Vue.use(ElementUI, {
   size: 'small'
 });
+
+Vue.use(Wrapper);
 
 new Vue({
   router,

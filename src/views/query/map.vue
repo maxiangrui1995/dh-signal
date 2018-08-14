@@ -210,7 +210,6 @@ export default {
     },
     // 弹出实时监测对话框
     showRealtimeMonitorDialog(crossing_id) {
-      console.log(crossing_id);
       this.visible_monitor = true;
     },
     monitorDialogClose() {

@@ -1,56 +1,51 @@
 <template>
-  <div>
-    <el-row :gutter="20">
-      <el-col :span="12" :offset="6">
-        <el-form ref="form" :inline="true" :rules="rules" :model="formData" label-position="right" label-width="100px">
-          <el-form-item label="方案名称" prop="name">
-            <el-input v-model="formData.name"></el-input>
-          </el-form-item>
-          <div>
-            <el-form-item label="相位差">
-              <el-input-number v-model="formData.phase_difference" :min="0" :max="255"></el-input-number>
-            </el-form-item>
-          </div>
-          <div>
-            <el-form-item label="脉冲倒计时">
-              <el-input-number v-model="formData.mc_countdown" :min="0" :max="255"></el-input-number>
-            </el-form-item>
-            <el-form-item label="脉冲宽度">
-              <el-input-number v-model="formData.mc_width" :min="0" :max="255"></el-input-number>
-            </el-form-item>
-          </div>
-          <div>
-            <el-form-item label="最小绿上限">
-              <el-input-number v-model="formData.min_green_down" :min="0" :max="255"></el-input-number>
-            </el-form-item>
-            <el-form-item label="最小绿下限">
-              <el-input-number v-model="formData.min_green_up" :min="0" :max="255"></el-input-number>
-            </el-form-item>
-          </div>
-          <div>
-            <el-form-item label="最大绿上限">
-              <el-input-number v-model="formData.max_green_down" :min="0" :max="255"></el-input-number>
-            </el-form-item>
-            <el-form-item label="最大绿下限">
-              <el-input-number v-model="formData.max_green_up" :min="0" :max="255"></el-input-number>
-            </el-form-item>
-          </div>
-          <div>
-            <el-form-item label="绿延伸上限">
-              <el-input-number v-model="formData.extends_down" :min="0" :max="255"></el-input-number>
-            </el-form-item>
-            <el-form-item label="绿延伸下限">
-              <el-input-number v-model="formData.extends_up" :min="0" :max="255"></el-input-number>
-            </el-form-item>
-          </div>
-          <el-form-item label=" ">
-            <el-button type="primary" :loading="loading" @click="handleSubmit">确定</el-button>
-            <el-button type="text" @click="handleReset">重置</el-button>
-          </el-form-item>
-        </el-form>
-      </el-col>
-    </el-row>
-
+  <div style="width:600px; margin:0 auto;">
+    <el-form ref="form" :inline="true" :rules="rules" :model="formData" label-position="right" label-width="100px" class="theme-form">
+      <el-form-item label="方案名称" prop="name">
+        <el-input v-model="formData.name"></el-input>
+      </el-form-item>
+      <div>
+        <el-form-item label="相位差">
+          <el-input-number v-model="formData.phase_difference" :min="0" :max="255"></el-input-number>
+        </el-form-item>
+      </div>
+      <div>
+        <el-form-item label="脉冲倒计时">
+          <el-input-number v-model="formData.mc_countdown" :min="0" :max="255"></el-input-number>
+        </el-form-item>
+        <el-form-item label="脉冲宽度">
+          <el-input-number v-model="formData.mc_width" :min="0" :max="255"></el-input-number>
+        </el-form-item>
+      </div>
+      <div>
+        <el-form-item label="最小绿上限">
+          <el-input-number v-model="formData.min_green_down" :min="0" :max="255"></el-input-number>
+        </el-form-item>
+        <el-form-item label="最小绿下限">
+          <el-input-number v-model="formData.min_green_up" :min="0" :max="255"></el-input-number>
+        </el-form-item>
+      </div>
+      <div>
+        <el-form-item label="最大绿上限">
+          <el-input-number v-model="formData.max_green_down" :min="0" :max="255"></el-input-number>
+        </el-form-item>
+        <el-form-item label="最大绿下限">
+          <el-input-number v-model="formData.max_green_up" :min="0" :max="255"></el-input-number>
+        </el-form-item>
+      </div>
+      <div>
+        <el-form-item label="绿延伸上限">
+          <el-input-number v-model="formData.extends_down" :min="0" :max="255"></el-input-number>
+        </el-form-item>
+        <el-form-item label="绿延伸下限">
+          <el-input-number v-model="formData.extends_up" :min="0" :max="255"></el-input-number>
+        </el-form-item>
+      </div>
+      <el-form-item label=" ">
+        <el-button type="primary" :loading="loading" @click="handleSubmit">确定</el-button>
+        <el-button type="text" @click="handleReset">重置</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 

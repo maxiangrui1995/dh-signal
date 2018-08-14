@@ -42,7 +42,7 @@
     <el-pagination @size-change="pageSizeChange" @current-change="pageCurrentChange" :current-page="pagePage" :page-size="pageRows" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals" v-if="pageTotals>0" :style="{'margin':'10px 0 0','text-align':'right'}">
     </el-pagination>
 
-    <el-dialog title="方案编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false" :show-close="false">
+    <el-dialog title="方案编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false">
       <el-form :model="formData" :inline="true" :rules="rules" ref="form">
         <div v-for="index in ~~formData.step" :key="index">
           <el-form-item label="步号" :style="{marginRight: '20px'}">
@@ -255,6 +255,9 @@ export default {
     },
     // 新增行
     handleItemCreate() {
+      if (this.formData.step >= 8) {
+        return this.$message.warning("已到达上限!");
+      }
       this.formData.step++;
       this.formData["phase" + this.formData.step] = "0";
       this.formData["time" + this.formData.step] = 25;

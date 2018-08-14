@@ -1,20 +1,64 @@
 <template>
   <div>
-    <el-form ref="form" label-width="100px">
+    <el-form ref="form" label-width="100px" class="theme-form">
       <el-form-item label="间隔总时间">
         <el-input-number v-model="time_interval" :min="0" :max="9"></el-input-number>
       </el-form-item>
-      <el-row :gutter="20">
+      <el-table :data="formData" class="dishover-table">
+        <el-table-column prop="type" label="通行权类型" width="180">
+          <template slot-scope="scope">
+            <span>{{cardTitle[scope.row.type]}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="first_step" label="第一步" align="right">
+          <template slot-scope="scope">
+            <el-select v-model="scope.row.first_step" placeholder="请选择" :style="{width: '90px'}">
+              <el-option v-for="(val, key, index) in colorOptions" :key="index" :label="val" :value="key">
+              </el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column prop="first_step_time" label="第一步时间">
+          <template slot-scope="scope">
+            <el-input-number v-model="scope.row.first_step_time" :min="0" :max="9" :style="{width: '120px'}"></el-input-number>
+          </template>
+        </el-table-column>
+        <el-table-column prop="sec_step" label="第二步" align="right">
+          <template slot-scope="scope">
+            <el-select v-model="scope.row.sec_step" placeholder="请选择" :style="{width: '90px'}">
+              <el-option v-for="(val, key, index) in colorOptions" :key="index" :label="val" :value="key">
+              </el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column prop="sec_step_time" label="第二步时间">
+          <template slot-scope="scope">
+            <el-input-number v-model="scope.row.sec_step_time" :min="0" :max="9" :style="{width: '120px'}"></el-input-number>
+          </template>
+        </el-table-column>
+        <el-table-column prop="third_step" label="第三步" align="right">
+          <template slot-scope="scope">
+            <el-select v-model="scope.row.third_step" placeholder="请选择" :style="{width: '90px'}">
+              <el-option v-for="(val, key, index) in colorOptions" :key="index" :label="val" :value="key">
+              </el-option>
+            </el-select>
+          </template>
+        </el-table-column>
+        <el-table-column prop="third_step_time" label="第三步时间">
+          <template slot-scope="scope">
+            <el-input-number v-model="scope.row.third_step_time" :min="0" :max="9" :style="{width: '120px'}"></el-input-number>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div style="margin-top: 20px;">
+        <el-button type="primary" :loading="loading" @click="handleSubmit">确定</el-button>
+        <el-button type="text" @click="handleReset">重置</el-button>
+      </div>
+      <!-- <el-row :gutter="20">
         <el-col :xs="24" :md="12" v-for="item in formData" :key="item.id">
           <el-card shadow="never" :style="{'margin-bottom':'20px'}">
             <div slot="header">
               <span>{{cardTitle[item.type]}}</span>
-              <!-- 
-              <el-tooltip content="通行权预览" :style="{float: 'right', padding: '5px 0'}">
-                <el-button type="text">
-                  <i class="el-icon-view" style="font-size: 16px;"></i>
-                </el-button>
-              </el-tooltip> -->
             </div>
             <el-row :gutter="10">
               <el-col :span="6" :offset="1">
@@ -49,7 +93,7 @@
         </el-col>
       </el-row>
       <el-button type="primary" :loading="loading" @click="handleSubmit">确定</el-button>
-      <el-button type="text" @click="handleReset">重置</el-button>
+      <el-button type="text" @click="handleReset">重置</el-button> -->
     </el-form>
   </div>
 </template>

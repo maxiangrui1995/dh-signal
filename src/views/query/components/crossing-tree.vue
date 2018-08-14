@@ -8,7 +8,7 @@
     </div>
     <el-scrollbar :style="{height: '460px'}">
       <div style="padding: 10px;">
-        <el-input placeholder="输入关键字进行过滤" v-model="filterText" :style="{marginBottom: '10px'}"></el-input>
+        <el-input placeholder="输入关键字进行过滤" v-model="filterText" clearable :style="{marginBottom: '10px'}"></el-input>
         <el-tree :data="crossingData" :filter-node-method="filterTree" :highlight-current="true" ref="tree" @node-click="handleTreeClick"></el-tree>
       </div>
     </el-scrollbar>

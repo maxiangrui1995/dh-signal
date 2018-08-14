@@ -8,15 +8,19 @@
         </el-breadcrumb>
       </div>
       <div>
-        <el-tabs v-model="tabsActive" @tab-click="handleTabsClick" class="page-header-tabs">
+        <el-tabs v-model="tabsActive" @tab-click="handleTabsClick" class="page-header-tabs theme-tabs">
           <el-tab-pane v-for="item in tabsItem" :key="item.name" :label="item.label" :name="item.name"></el-tab-pane>
         </el-tabs>
       </div>
     </el-header>
     <el-main>
-      <el-card shadow="never">
-        <router-view></router-view>
-      </el-card>
+      <div class="content-card-wrapper">
+        <Wrapper>
+          <transition name="fade-transform" mode="out-in">
+            <router-view></router-view>
+          </transition>
+        </Wrapper>
+      </div>
     </el-main>
   </el-container>
 </template>

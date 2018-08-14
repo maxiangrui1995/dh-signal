@@ -43,7 +43,7 @@
     <el-pagination @size-change="pageSizeChange" @current-change="pageCurrentChange" :current-page="pagePage" :page-size="pageRows" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals" v-if="pageTotals>0" :style="{'margin':'10px 0 0','text-align':'right'}">
     </el-pagination>
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="480px" :close-on-click-modal="false" :show-close="false">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="480px" :close-on-click-modal="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="80px">
         <el-form-item label="日期类型" prop="datetype">
           <el-select placeholder="请选择" v-model="formData.datetype" @change="datetypeChange" :style="{width: '100%'}">
@@ -99,11 +99,7 @@ export default {
         "2": "待机全红",
         "3": "无线缆协调",
         "4": "感应方式",
-        "7": "关闭外灯",
-        "8": "关闭外灯",
         "9": "时钟同步",
-        "153": "锁相位特勤控制",
-        "181": "锁阶段特勤控制，或手动控制和步进",
         "200": "自适应方案"
       },
       weekFormatter: {
@@ -333,10 +329,19 @@ export default {
         patternid: f.patternid,
         plan_id: this.id
       };
+      if (!f.begin_time) {
+        this.dialogLoading = false;
+        return this.$message.warning("开始时间异常");
+      }
+
       data.start_hour = f.begin_time.split(":")[0];
       data.start_min = f.begin_time.split(":")[1];
       if (f.datetype === "15") {
         let t = f.time_range;
+        if (!t) {
+          this.dialogLoading = false;
+          return this.$message.warning("日期范围异常");
+        }
         data.start_mon = t[0].split("/")[0];
         data.start_day = t[0].split("/")[1];
         data.stop_mon = t[1].split("/")[0];

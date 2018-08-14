@@ -6,22 +6,6 @@
 * [git@github.com:maxiangrui1995/dh-signal.git](git@github.com:maxiangrui1995/dh-signal.git)
 * [git@192.168.0.250:luronggui/SignalControl.git](git@192.168.0.250:luronggui/SignalControl.git)
 
-# 功能
-
-- 登录/登出 
-- 权限管理
-- 主题切换
-- 全屏/退出全屏
-- 锁屏
-- 账号密码修改
-- 综合查询
-- 区域管理
-- 特征参数
-- 绿波带
-- 用户管理
-- 特勤联动
-- 车流量
-
 # 更新日志 
 >### 0.0.1
 * 新增README.md说明
@@ -32,4 +16,4 @@
 * 路由跳转push方法替换为replace方法
 * 首页页面布局调整
 * 综合查询操作界面调整
-* 区域管理图片瀑布流布局
+* 区域管理图片

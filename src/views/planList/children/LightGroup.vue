@@ -2,7 +2,7 @@
   <div>
     <canvas ref="canvasview" width="800" height="640" class="lightgroup-canvas"></canvas>
 
-    <el-dialog title="灯组编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false" :show-close="false">
+    <el-dialog title="灯组编辑" :visible.sync="dialogVisible" width="560px" :close-on-click-modal="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="90px">
         <el-form-item label="相位标题">
           <el-select v-model="formData.title" placeholder="请选择" disabled>

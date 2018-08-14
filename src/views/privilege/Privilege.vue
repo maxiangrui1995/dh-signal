@@ -57,7 +57,7 @@
       </el-main>
     </el-container>
 
-    <el-dialog title="特勤联动新增" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false" :show-close="false">
+    <el-dialog title="特勤联动新增" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="100px">
         <el-form-item label="预案号" prop="sch_id">
           <el-input v-model="formData.sch_id" placeholder="请输入预案号"></el-input>

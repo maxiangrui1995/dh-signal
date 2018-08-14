@@ -38,7 +38,7 @@
       </el-main>
     </el-container>
 
-    <el-dialog title="备用电源新增" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false" :show-close="false">
+    <el-dialog title="备用电源新增" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="90px">
         <el-form-item label="备用电源IP" prop="ip">
           <el-input clearable v-model="formData.ip" placeholder="请输入IP" :style="{width: '100%'}"></el-input>

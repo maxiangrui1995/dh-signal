@@ -1,24 +1,22 @@
 <template>
-  <div>
-    <el-container>
-      <el-header class="page-header">
-        <div class="page-header-inner">
-          <el-breadcrumb separator="/">
-            <el-breadcrumb-item>区域管理</el-breadcrumb-item>
-          </el-breadcrumb>
-          <div style="float:right;">
-            <el-button type="primary" icon="el-icon-plus" :style="{marginRight: '10px'}" @click="handleCreate">
-              新增
-            </el-button>
-            <el-input suffix-icon="el-icon-search" placeholder="请输入名称进行检索" style="width: 200px" readonly></el-input>
-          </div>
+  <el-container>
+    <el-header class="page-header">
+      <div class="page-header-inner">
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item>区域管理</el-breadcrumb-item>
+        </el-breadcrumb>
+        <div style="float:right;">
+          <el-button type="primary" icon="el-icon-plus" :style="{marginRight: '10px'}" @click="handleCreate">
+            新增
+          </el-button>
+          <!-- <el-input suffix-icon="el-icon-search" placeholder="请输入名称进行检索" style="width: 200px" readonly></el-input> -->
         </div>
-      </el-header>
-      <el-main>
-        <el-card shadow="never">
+      </div>
+    </el-header>
+    <el-main>
+      <div class="content-card-wrapper">
+        <Wrapper>
           <el-table :data="tableData" v-loading="loading" :show-header="false" style="width: 100%">
-            <el-table-column type="index" width="50">
-            </el-table-column>
             <el-table-column prop="name" label="name">
             </el-table-column>
             <el-table-column label="操作" align="center" width="180">
@@ -31,10 +29,11 @@
               </template>
             </el-table-column>
           </el-table>
-        </el-card>
-      </el-main>
-    </el-container>
-  </div>
+        </Wrapper>
+      </div>
+    </el-main>
+  </el-container>
+
 </template>
 
 <script>

@@ -1,27 +1,30 @@
 <template>
-  <div>
-    <el-container>
-      <el-header class="page-header">
-        <div class="page-header-inner">
-          <el-breadcrumb separator="/">
-            <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-          </el-breadcrumb>
-          <div style="float:right;">
-            <el-button type="primary" icon="el-icon-plus" :style="{marginRight: '10px'}" @click="handleCreate">
-              新增
-            </el-button>
-            <el-input suffix-icon="el-icon-search" placeholder="请输入名称进行检索" style="width: 200px"></el-input>
-          </div>
+  <el-container>
+    <el-header class="page-header">
+      <div class="page-header-inner">
+        <el-breadcrumb separator="/">
+          <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+        </el-breadcrumb>
+        <div style="float:right;">
+          <el-button type="primary" icon="el-icon-plus" :style="{marginRight: '10px'}" @click="handleCreate">
+            新增
+          </el-button>
+          <!-- <el-input suffix-icon="el-icon-search" placeholder="请输入名称进行检索" style="width: 200px"></el-input> -->
         </div>
-      </el-header>
-      <el-main>
-        <el-card shadow="never">
+      </div>
+    </el-header>
+    <el-main>
+      <div class="content-card-wrapper">
+        <Wrapper>
           <el-table :data="tableData" v-loading="tableLoading" style="width: 100%">
             <el-table-column type="index" width="50">
             </el-table-column>
             <el-table-column prop="username" label="用户名称">
             </el-table-column>
             <el-table-column prop="password" label="密码">
+              <template slot-scope="scope">
+                <div>**********************</div>
+              </template>
             </el-table-column>
             <el-table-column prop="permission" label="用户类型">
               <template slot-scope="scope">
@@ -38,11 +41,10 @@
           </el-table>
           <el-pagination @size-change="pageSizeChange" @current-change="pageCurrentChange" :current-page="pagePage" :page-size="pageRows" layout="total, sizes, prev, pager, next, jumper" :total="pageTotals" v-if="pageTotals>0" :style="{'margin':'10px 0 0','text-align':'right'}">
           </el-pagination>
-        </el-card>
-      </el-main>
-    </el-container>
-
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="520px" :close-on-click-modal="false" :show-close="false">
+        </Wrapper>
+      </div>
+    </el-main>
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="520px" :close-on-click-modal="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="100px">
         <el-form-item label="用户名称" prop="username">
           <el-input clearable v-model="formData.username" placeholder="请输入名称" :style="{width: '100%'}"></el-input>
@@ -62,7 +64,7 @@
         <el-button type="primary" @click="handleFormSubmit" :loading="dialogLoading">确 定</el-button>
       </span>
     </el-dialog>
-  </div>
+  </el-container>
 </template>
 
 <script>

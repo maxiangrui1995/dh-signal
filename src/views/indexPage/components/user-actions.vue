@@ -1,6 +1,7 @@
 <template>
   <el-dropdown @command="handleCommand" class="layout-header-tools-btn-con">
     <span>{{userName}}</span>
+    <i class="el-icon-arrow-down el-icon--right" style="font-size: 14px;"></i>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item command="user">
         <i class="fa fa-user" style="margin-right: 5px;"></i>
@@ -69,6 +70,7 @@ export default {
         .catch(() => {});
     },
     handleSetting() {
+      this.$emit("updatePassWord");
       /* this.$router.replace({
         path: "/userSetting"
       }); */

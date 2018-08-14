@@ -133,6 +133,7 @@ APP.prototype.init = function (elem) {
 APP.prototype.clearCanvas = function () {
   this.selector.clearCanvas().removeLayers();
 }
+
 APP.prototype.draw = function () {
   this.clearCanvas();
   let selector = this.selector;
@@ -536,6 +537,22 @@ APP.prototype.draw = function () {
   if (this.COUNT !== undefined) {
     countDown();
   }
+}
+
+APP.prototype.drawText = function (text, color, clear) {
+  if (!clear) {
+    this.clearCanvas();
+  }
+  this.selector.drawText({
+    layer: true,
+    fillStyle: color || "#00bcd4",
+    strokeWidth: 2,
+    fontSize: 20,
+    fontFamily: 'Verdana, sans-serif',
+    text: text || "",
+    x: 0,
+    y: 0
+  })
 }
 
 

@@ -50,7 +50,7 @@
       </el-main>
     </el-container>
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%" :close-on-click-modal="false" :show-close="false">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500" :close-on-click-modal="false">
       <el-form :model="formData" :rules="rules" ref="form" label-width="80px">
         <el-form-item label="相机IP" prop="ip">
           <el-input clearable v-model="formData.ip" placeholder="请输入IP" :style="{width: '100%'}"></el-input>
@@ -59,20 +59,20 @@
           <el-input v-model="formData.port" readonly :style="{width: '100%'}"></el-input>
         </el-form-item>
         <el-form-item label="类型" prop="type">
-          <el-radio-group v-model="form.type">
-            <el-radio label="车流量相机" value="1"></el-radio>
-            <el-radio label="电子警察" value="2"></el-radio>
-          </el-radio-group>
+          <el-select v-model="formData.type" placeholder="请选择">
+            <el-option label="车流量相机" value="1"></el-option>
+            <el-option label="电子警察" value="2"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="所属路口" prop="crossing_id">
           <el-cascader :options="crossingData" v-model="formData.crossing_id_array" filterable clearable :style="{width: '100%'}">
           </el-cascader>
         </el-form-item>
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="formData.ip" placeholder="用户名" :style="{width: '100%'}"></el-input>
+          <el-input v-model="formData.username" placeholder="用户名" :style="{width: '100%'}"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="formData.port" placeholder="密码" :style="{width: '100%'}"></el-input>
+          <el-input v-model="formData.password" placeholder="密码" :style="{width: '100%'}"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer">
@@ -163,8 +163,28 @@ export default {
     handleCreate() {
       this.dialogVisible = true;
       this.dialogTitle = "相机新增";
+      this.formData = {
+        ip: "",
+        port: "2555",
+        type: "1",
+        username: "",
+        password: "",
+        crossing_id_array: []
+      };
+      if (this.$refs["form"]) {
+        this.$refs["form"].resetFields();
+      }
     },
-    handleUpdate(row) {},
+    handleUpdate(row) {
+      console.log(row);
+
+      this.dialogVisible = true;
+      this.dialogTitle = "相机新增";
+      this.formData = Object.assign({}, row);
+      if (this.$refs["form"]) {
+        this.$refs["form"].resetFields();
+      }
+    },
     handleDelete(row) {
       this.$msgbox({
         title: "提示",
@@ -202,11 +222,23 @@ export default {
     },
     handleFormSubmit() {
       this.dialogLoading = true;
-      let { ip, port, crossing_id_array } = this.formData;
-      this.$http("index/d_machine/dataAdd", {
-        ip: ip,
-        port: port,
-        crossing_id: crossing_id_array["2"]
+      let {
+        ip,
+        port,
+        crossing_id_array,
+        type,
+        username,
+        password
+      } = this.formData;
+
+      this.$http("flow_check/f_camera/dataAdd", {
+        ip,
+        port,
+        type,
+        crossing_id: crossing_id_array["2"],
+        manufacturer: 0,
+        username,
+        password
       }).then(res => {
         this.$message({
           type: res.status ? "success" : "error",

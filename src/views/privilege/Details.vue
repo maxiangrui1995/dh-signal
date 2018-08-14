@@ -57,7 +57,7 @@
       </el-main>
     </el-container>
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="520px" :close-on-click-modal="false" :close="dialogClose" :show-close="false">
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="520px" :close-on-click-modal="false" :close="dialogClose">
       <el-form :model="formData" :rules="rules" ref="form" label-width="80px">
         <el-form-item label="路口" prop="crossing_id">
           <el-cascader :options="crossingData" v-model="formData.crossing_id" :style="{ width: '100%' }">
