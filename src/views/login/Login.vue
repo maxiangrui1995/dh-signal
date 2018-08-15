@@ -54,6 +54,7 @@ export default {
       }).then(res => {
         if (res.status) {
           this.$store.commit("SETLOGIN", true);
+          this.$store.commit("SETUSER", this.formData.username);
           setTimeout(() => {
             this.$router.replace({
               name: "home"

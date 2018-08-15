@@ -441,17 +441,17 @@ APP.prototype.draw = function () {
     let lw = LW;
     // 1 - db(1)
     let draw_1 = () => {
-      for (let i = 0; i < d1.car.length; i++) {
-        let x = -yw - lw * (i + n1 - d1.car.length) - lw / 2;
+      for (let i = 0; i < d3.car.length; i++) {
+        let x = -yw - lw * (i + n1 - d3.car.length) - lw / 2;
         let y = o5 + lw / 2 + 4;
-        let item = d1.car[i];
+        let item = d3.car[i];
         draw(x, y, 180, item);
         drawTitle(x, y + lw, item.title);
       }
       let x = o7 + lw / 2;
       let y1 = o5 + lw / 2 - corner;
       let y2 = o1 - lw / 2 + corner;
-      let item = d1.man["0"];
+      let item = d3.man["0"];
       draw(x, y1, 180, item);
       drawTitle(x, y1 + lw, item.title);
       draw(x, y2, 0, item);
@@ -461,16 +461,16 @@ APP.prototype.draw = function () {
     // 5 - db(3)
     let draw_5 = () => {
       for (let i = 0; i < d1.car.length; i++) {
-        let x = yw + lw * (i + n1 - d3.car.length) + lw / 2;
+        let x = yw + lw * (i + n1 - d1.car.length) + lw / 2;
         let y = o1 - lw / 2 - 4;
-        let item = d3.car[i];
+        let item = d1.car[i];
         draw(x, y, 0, item);
         drawTitle(x, y - lw, item.title);
       }
       let x = o3 - lw / 2;
       let y1 = o1 - lw / 2 + corner;
       let y2 = o5 + lw / 2 - corner;
-      let item = d3.man["0"];
+      let item = d1.man["0"];
       draw(x, y1, 0, item);
       drawTitle(x, y1 - lw, item.title);
       draw(x, y2, 180, item);

@@ -57,15 +57,15 @@
               <el-form-item label="目标类型1">
                 <el-select v-model="machinePolice.direction1" placeholder="请选择">
                   <el-option value="3" label="左转"></el-option>
-                  <el-option value="2" label="右转"></el-option>
-                  <el-option value="4" label="直行"></el-option>
+                  <el-option value="4" label="右转"></el-option>
+                  <el-option value="2" label="直行"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="目标类型2">
                 <el-select v-model="machinePolice.direction2" placeholder="请选择">
                   <el-option value="3" label="左转"></el-option>
-                  <el-option value="2" label="右转"></el-option>
-                  <el-option value="4" label="直行"></el-option>
+                  <el-option value="4" label="右转"></el-option>
+                  <el-option value="2" label="直行"></el-option>
                 </el-select>
               </el-form-item>
               <el-form-item label="">
@@ -309,12 +309,17 @@ export default {
         })
         .then(() => {
           let wsUrl = this.wsUrl;
+
           if (!wsUrl) return;
+          if (this.websocket) {
+            this.websocket.onclose();
+            this.websocket = null;
+          }
           let w = (this.websocket = new WebSocket(wsUrl));
           let crossing_id = this.crossingView.crossing.id;
           let self = this;
           w.onopen = function() {
-            self.$message.info("websocket开始连接");
+            // self.$message.info("websocket开始连接");
             w.send(crossing_id);
           };
           w.onmessage = function(evt) {
@@ -324,11 +329,11 @@ export default {
             }
           };
           w.onerror = function() {
-            self.$message.info("websocket连接失败");
+            // self.$message.info("websocket连接失败");
             throw "websocket连接失败";
           };
           w.onclose = function() {
-            self.$message.info("websocket连接断开");
+            // self.$message.info("websocket连接断开");
             w.close();
           };
         });
@@ -354,15 +359,16 @@ export default {
           draw.COUNT = time_interval - machine.current_phase_time;
         } else {
           if (machine.current_phase_time != 255) {
-            draw.COUNT =
+            let c =
               ~~current_plan["time" + machine.current_step_num] +
               time_interval -
               machine.current_phase_time;
+            draw.COUNT = c < 0 ? 0 : c;
           }
         }
 
         this.machineInfoData = {
-          ip: this.machine.ip,
+          ip: this.crossingView.machine.ip,
           time: machine.time,
           data_plan: plan.data_plan.name,
           current_plan: "方案" + (~~machine.current_plan + 1),
@@ -376,16 +382,53 @@ export default {
           temperature: machine.temperature,
           voltage: machine.voltage
         };
-        this.upsData = {
-          ip: this.ups.ip,
-          ups1: ups[0],
-          ups2: ups[1],
-          ups3: ups[2],
-          ups4: ups[3],
-          ups5: ups[4],
-          ups6: ups[5],
-          ups7: ups[6]
-        };
+
+        let ups = data.data.ups;
+        if (ups) {
+          this.upsData = {
+            ip: this.crossingView.ups.ip
+          };
+          for (let i = 0; i < ups.length; i++) {
+            this.upsData["ups" + (i + 1)] = ups[i];
+          }
+          for (var i = 0; i < this.upsData["ups8"].length; i++) {
+            var val = this.upsData["ups8"][i];
+            var d = {
+              "0": {
+                "0": "异常",
+                "1": "正常"
+              },
+              "1": {
+                "0": "异常",
+                "1": "正常"
+              },
+              "2": {
+                "0": "旁路",
+                "1": "默认"
+              },
+              "3": {
+                "0": "异常",
+                "1": "正常"
+              },
+              "4": {
+                "0": "开机",
+                "1": "关机"
+              },
+              "5": {
+                "0": "自检",
+                "1": "默认"
+              },
+              "6": {
+                "0": "计划",
+                "1": "默认"
+              }
+            }[i];
+            if (d) {
+              this.upsData["ups8" + i] = d[val];
+            }
+          }
+        }
+
         draw.draw();
       }
     },
@@ -497,6 +540,9 @@ export default {
           type: res.status ? "success" : "error",
           message: res.message
         });
+        if (res.status) {
+          this.getMachinePlan();
+        }
       });
     },
     // 上传
@@ -514,9 +560,9 @@ export default {
             message: res.message
           });
           if (res.status) {
-            setTimeout(() => {
-              window.reload();
-            });
+            if (res.status) {
+              this.getMachinePlan();
+            }
           }
         });
       } else {
@@ -541,9 +587,10 @@ export default {
               instance.confirmButtonText = "初始化中...";
               // ajax
               this.$http("index/d_machine_control/uploadSetting", {
-                machine_id: this.machine.id,
+                machine_id: this.machine_id,
                 is_cover: 0,
-                plan_id: this.plan.id
+                plan_id: this.plan.id,
+                name: instance.inputValue
               }).then(res => {
                 this.$message({
                   type: res.status ? "success" : "error",
@@ -552,9 +599,7 @@ export default {
                 done();
                 instance.confirmButtonLoading = false;
                 if (res.status) {
-                  setTimeout(() => {
-                    window.reload();
-                  });
+                  this.getMachinePlan();
                 }
               });
             } else {

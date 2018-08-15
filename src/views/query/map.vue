@@ -156,9 +156,7 @@ export default {
               <img src="${img}" onerror="${this.imageLoadError}"/>
             </div>
             <div class="info-container-footer">
-              <button class="button" id="infowindow-${id}">实时监控</button>
-              <button class="button" id="infowindow1-${id}">电子警察视频</button>
-              <button class="button" id="infowindow2-${id}">车流量视频</button>
+              <button class="button" id="infowindow-${id}" style="width:100%">实时监控</button>
             </div>
           </div>`;
           infoWindow.setContent(str);
@@ -170,7 +168,7 @@ export default {
               return this.$message.warning("未配置信号机");
             }
             this.showRealtimeMonitorDialog(id);
-          };
+          };/* 
           document.getElementById(`infowindow1-${id}`).onclick = () => {
             if (!camera.length) {
               this.$message.warning("未配置相机");
@@ -204,7 +202,7 @@ export default {
                 this.showRealtimeMonitorDialog(id);
               }
             }
-          };
+          }; */
         }
       });
     },

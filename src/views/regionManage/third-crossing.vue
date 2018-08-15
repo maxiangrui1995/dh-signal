@@ -115,7 +115,7 @@ export default {
       loading: true,
       tableData: [], //路口数据
       imageLoadError: "this.src='" + require("@/assets/crossing.jpg") + "'", // 加载失败的图片
-      uploadAction: this.ajaxURL + "index/d_upload/imageUpload", //上传的地址
+      uploadAction: this.ajaxURL + "/index/d_upload/imageUpload", //上传的地址
       handleStatus: "", // 编辑/新增
       dialogVisible: false, // 弹窗开关
       form: {},
