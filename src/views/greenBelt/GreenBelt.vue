@@ -116,7 +116,7 @@ export default {
       },
       formData: {
         name: "",
-        period: 0,
+        period: 80,
         coordinate_direction: "1",
         type: "0",
         datetimeRange: "",
@@ -159,7 +159,7 @@ export default {
       this.dialogTitle = "绿波带新增";
       this.formData = {
         name: "",
-        period: 0,
+        period: 80,
         coordinate_direction: "1",
         type: "0",
         datetimeRange: "",
